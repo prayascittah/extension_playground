@@ -1,0 +1,46 @@
+{
+   "name": "YTBKMK",
+   "description": "YouTube TimeStamp Bookmark",
+   "version": "1.0",
+   "manifest_version": 3,
+   "permissions": ["storage", "tabs"],
+   "host_permissions": ["https://*.youtube.com/*"],
+   "background": {
+      "service_worker": "background.js"
+   },
+   "content_scripts": [
+      {
+         "matches": ["https://*.youtube.com/*"],
+         "js": ["contentScript.js"]
+      }
+   ],
+   "web_accessible_resources": [
+      {
+         "resources": [
+            "popup.html",
+            "popup.js",
+            "styles.css",
+            "images/bookmark1-16.png",
+            "images/bookmark1-24.png",
+            "images/bookmark1-32.png",
+            "images/bookmark1-48.png",
+            "images/bookmark1-64.png",
+            "images/bookmark1-128.png",
+            "images/bookmark3-16.png",
+            "images/bookmark4-48.png"
+         ],
+         "matches": ["https://*.youtube.com/*"]
+      }
+   ],
+   "action": {
+      "default_icon": {
+         "16": "./images/bookmark2-16.png",
+         "24": "./images/bookmark2-24.png",
+         "32": "./images/bookmark2-32.png",
+         "48": "./images/bookmark2-48.png",
+         "128": "./images/bookmark2-128.png"
+      },
+      "default_title": "YTBKMK",
+      "default_popup": "popup.html"
+   }
+}
