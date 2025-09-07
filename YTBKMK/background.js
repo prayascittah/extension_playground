@@ -7,7 +7,6 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
       const queryParameters = tab.url.split('?')[1];
       const urlParameters = new URLSearchParams(queryParameters);
 
-      // Add error handling for message sending
       chrome.tabs
          .sendMessage(tabId, {
             type: 'NEW',

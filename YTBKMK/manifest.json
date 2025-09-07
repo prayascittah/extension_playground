@@ -17,9 +17,9 @@
    "web_accessible_resources": [
       {
          "resources": [
-            "popup.html",
-            "popup.js",
-            "styles.css",
+            "images/play.png",
+            "images/delete.png",
+            "images/save.png",
             "images/bookmark1-16.png",
             "images/bookmark1-24.png",
             "images/bookmark1-32.png",
