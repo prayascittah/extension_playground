@@ -73,8 +73,7 @@ const callImmediately = () => {
       }
    });
 
-   // Remove this redundant call - it runs before currentVideo is set
-   // newVideoLoaded();
+   newVideoLoaded();
 };
 
 callImmediately();
