@@ -38,14 +38,14 @@ function App() {
 
   // Regular popup mode
   return (
-    <div className="w-80 h-96 bg-gradient-to-br from-purple-200 to-purple-300 flex flex-col items-center justify-center p-4 relative">
+    <div className="w-110 h-60 bg-white flex flex-col items-center justify-center p-4 relative border border-gray-200">
       {/* Pin button in top left */}
       <button
         onClick={handlePin}
         className={`absolute top-3 left-3 p-2 rounded-lg transition-colors ${
           isPinned
-            ? "bg-purple-600 text-white shadow-lg"
-            : "bg-white/70 text-purple-600 hover:bg-white/90"
+            ? "bg-black text-white shadow-lg"
+            : "bg-gray-200 text-black hover:bg-gray-300"
         }`}
         title={
           isPinned
@@ -59,7 +59,7 @@ function App() {
       </button>
 
       {/* Date and day header */}
-      <div className="text-purple-700 text-sm mb-2 font-medium">
+      <div className="text-gray-700 text-sm mb-2 font-medium">
         {time
           .toLocaleDateString("en-US", {
             month: "2-digit",
@@ -73,27 +73,30 @@ function App() {
       {/* Main time display - Flip clock style */}
       <div className="flex items-center space-x-4 mb-6">
         {/* Hours Card */}
-        <div className="bg-white/70 rounded-2xl p-6 shadow-xl border border-purple-200 relative backdrop-blur-sm">
-          <div className="text-6xl font-bold text-purple-800 tabular-nums leading-none">
+        <div className="bg-gray-200 rounded-2xl p-6 shadow-xl border border-gray-300 relative">
+          <div className="text-6xl font-bold text-black tabular-nums leading-none">
             {time.getHours().toString().padStart(2, "0")}
           </div>
           {/* Horizontal line through middle */}
+          <div className="absolute inset-x-0 top-1/2 h-px bg-gray-400 transform -translate-y-0.5"></div>
         </div>
 
         {/* Minutes Card */}
-        <div className="bg-white/70 rounded-2xl p-6 shadow-xl border border-purple-200 relative backdrop-blur-sm">
-          <div className="text-6xl font-bold text-purple-800 tabular-nums leading-none">
+        <div className="bg-gray-200 rounded-2xl p-6 shadow-xl border border-gray-300 relative">
+          <div className="text-6xl font-bold text-black tabular-nums leading-none">
             {time.getMinutes().toString().padStart(2, "0")}
           </div>
           {/* Seconds in bottom right of minutes card */}
-          <div className="absolute bottom-2 right-2 bg-purple-500 text-white text-sm font-bold px-2 py-1 rounded-md shadow-md">
+          <div className="absolute bottom-2 right-2 bg-black text-white text-sm font-bold px-2 py-1 rounded-md shadow-md">
             {time.getSeconds().toString().padStart(2, "0")}
           </div>
+          {/* Horizontal line through middle */}
+          <div className="absolute inset-x-0 top-1/2 h-px bg-gray-400 transform -translate-y-0.5"></div>
         </div>
       </div>
 
       {/* Hyperfocus button */}
-      <button className="px-6 py-3 bg-purple-500 hover:bg-purple-600 text-white font-semibold rounded-lg text-sm transition-colors shadow-lg">
+      <button className="px-6 py-3 bg-black hover:bg-gray-800 text-white font-semibold rounded-lg text-sm transition-colors shadow-lg">
         Hyperfocus Mode
       </button>
     </div>
