@@ -1,8 +1,18 @@
 import { useEffect, useRef, useState } from "react";
+import {
+  LockKeyhole,
+  LockKeyholeOpen,
+  Timer,
+  Settings,
+  Pin,
+} from "lucide-react";
 
 function App() {
   const [time, setTime] = useState(new Date());
   const [isPinned, setIsPinned] = useState(false);
+  const [isPinPinned, setIsPinPinned] = useState(false);
+  const [isLockHovered, setIsLockHovered] = useState(false);
+  const [isTimerHovered, setIsTimerHovered] = useState(false);
   const timeoutRef = useRef();
 
   useEffect(() => {
@@ -15,90 +25,102 @@ function App() {
     return () => clearTimeout(timeoutRef.current);
   }, []);
 
-  const handlePin = () => {
-    setIsPinned(!isPinned);
-
-    // Send message to content script to toggle floating clock
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        { action: "toggleFloatingClock" },
-        (response) => {
-          if (chrome.runtime.lastError) {
-            console.log("Content script not ready, that's okay");
-          }
-        }
-      );
-    });
-  };
-
-  // Check if we're in floating mode
-  const isFloatingMode =
-    new URLSearchParams(window.location.search).get("mode") === "floating";
-
   // Regular popup mode
   return (
-    <div className="w-110 h-60 bg-white flex flex-col items-center justify-center p-4 relative border border-gray-200">
-      {/* Pin button in top left */}
-      <button
-        onClick={handlePin}
-        className={`absolute top-3 left-3 p-2 rounded-lg transition-colors ${
-          isPinned
-            ? "bg-black text-white shadow-lg"
-            : "bg-gray-200 text-black hover:bg-gray-300"
-        }`}
-        title={
-          isPinned
-            ? "Pinned - Toggle floating clock"
-            : "Pin to show floating clock"
-        }
-      >
-        <svg className="w-4 h-4" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M16,12V4H17V2H7V4H8V12L6,14V16H11.2V22H12.8V16H18V14L16,12Z" />
-        </svg>
-      </button>
-
-      {/* Date and day header */}
-      <div className="text-gray-700 text-sm mb-2 font-medium">
-        {time
-          .toLocaleDateString("en-US", {
-            month: "2-digit",
-            day: "2-digit",
-            year: "2-digit",
-          })
-          .replace(/\//g, "/")}{" "}
-        • {time.toLocaleDateString("en-US", { weekday: "long" })}
+    <div className="w-110 h-60 bg-gray-100 flex p-2">
+      {/* Top section - Pin button */}
+      <div className="flex justify-start items-start">
+        <button
+          className={`p-2 rounded-lg transition-all duration-300 ${
+            isPinPinned
+              ? "bg-red-500 hover:bg-red-600 text-white rotate-45 hover:rotate-0"
+              : "bg-gray-200 hover:bg-gray-300 text-black rotate-45 hover:rotate-0"
+          }`}
+          title={isPinPinned ? "Unpin floating clock" : "Pin floating clock"}
+        >
+          <Pin size={16} />
+        </button>
       </div>
 
-      {/* Main time display - Flip clock style */}
-      <div className="flex items-center space-x-4 mb-6">
-        {/* Hours Card */}
-        <div className="bg-gray-200 rounded-2xl p-6 shadow-xl border border-gray-300 relative">
-          <div className="text-6xl font-bold text-black tabular-nums leading-none">
-            {time.getHours().toString().padStart(2, "0")}
+      {/* Middle section - Clock display */}
+      <div className="flex-1 flex flex-col justify-between items-center">
+        <div></div> {/* Spacer */}
+        <div className="flex flex-col items-center">
+          {/* Date and day header */}
+          <div className="text-gray-700 text-sm mb-3 font-bold text-center">
+            {time.toLocaleDateString("en-US", {
+              weekday: "long",
+              month: "short",
+              day: "numeric",
+            })}
           </div>
-          {/* Horizontal line through middle */}
-          <div className="absolute inset-x-0 top-1/2 h-px bg-gray-400 transform -translate-y-0.5"></div>
-        </div>
 
-        {/* Minutes Card */}
-        <div className="bg-gray-200 rounded-2xl p-6 shadow-xl border border-gray-300 relative">
-          <div className="text-6xl font-bold text-black tabular-nums leading-none">
-            {time.getMinutes().toString().padStart(2, "0")}
+          {/* Main time display - Flip clock style */}
+          <div className="flex items-center justify-center gap-4">
+            {/* Hours Card */}
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-300 relative">
+              <div className="text-6xl font-bold text-black tabular-nums leading-none">
+                {time.getHours().toString().padStart(2, "0")}
+              </div>
+            </div>
+
+            {/* Minutes Card */}
+            <div className="bg-white rounded-xl p-6 shadow-lg border border-gray-300 relative">
+              <div className="text-6xl font-bold text-black tabular-nums leading-none">
+                {time.getMinutes().toString().padStart(2, "0")}
+              </div>
+              {/* Seconds in bottom right of minutes card */}
+              <div className="absolute bottom-2 right-2 bg-black text-white text-sm font-bold px-2 py-1 rounded-md shadow-md">
+                {time.getSeconds().toString().padStart(2, "0")}
+              </div>
+            </div>
           </div>
-          {/* Seconds in bottom right of minutes card */}
-          <div className="absolute bottom-2 right-2 bg-black text-white text-sm font-bold px-2 py-1 rounded-md shadow-md">
-            {time.getSeconds().toString().padStart(2, "0")}
-          </div>
-          {/* Horizontal line through middle */}
-          <div className="absolute inset-x-0 top-1/2 h-px bg-gray-400 transform -translate-y-0.5"></div>
+        </div>
+        <div className="text-xs text-gray-500 text-center">
+          made with love by Jayanth P<br />
+          <span className="italic">a humble procrastinator</span>
         </div>
       </div>
 
-      {/* Hyperfocus button */}
-      <button className="px-6 py-3 bg-black hover:bg-gray-800 text-white font-semibold rounded-lg text-sm transition-colors shadow-lg">
-        Hyperfocus Mode
-      </button>
+      <div className="flex flex-col justify-center gap-2">
+        {/* Lock button */}
+        <button
+          onMouseEnter={() => setIsLockHovered(true)}
+          onMouseLeave={() => setIsLockHovered(false)}
+          className={`p-2 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-black ${
+            isPinned ? "bg-black text-white hover:bg-gray-800" : ""
+          }`}
+          title={
+            isPinned
+              ? "Unlock - Remove floating clock"
+              : "Lock - Pin floating clock"
+          }
+        >
+          {isPinned || isLockHovered ? (
+            <LockKeyholeOpen size={16} />
+          ) : (
+            <LockKeyhole size={16} />
+          )}
+        </button>
+
+        {/* Timer button */}
+        <button
+          onMouseEnter={() => setIsTimerHovered(true)}
+          onMouseLeave={() => setIsTimerHovered(false)}
+          className="p-2 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-black"
+          title="Pomodoro Timer"
+        >
+          <Timer size={16} />
+        </button>
+
+        {/* Settings button */}
+        <button
+          className="p-2 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-black"
+          title="Settings"
+        >
+          <Settings size={16} />
+        </button>
+      </div>
     </div>
   );
 }
