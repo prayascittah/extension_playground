@@ -1,8 +1,10 @@
+import { HandHeart } from "lucide-react";
 function Signature() {
   return (
-    <div className="text-xs text-gray-500 text-center">
-      made with love by Jayanth P<br />
-      <span className="italic">a humble procrastinator</span>
+    <div>
+      <div className="text-xs text-gray-500 flex items-center justify-center">
+        Made by Prayascittah
+      </div>
     </div>
   );
 }

@@ -5,13 +5,11 @@ import Signature from "./Signature";
 function MiddleSection({ time }) {
   return (
     <div className="flex-1 flex flex-col justify-between items-center">
-      <div></div> {/* Spacer */}
-      
+      <DateHeader time={time} />
       <div className="flex flex-col items-center">
-        <DateHeader time={time} />
         <ClockDisplay time={time} />
       </div>
-      
+
       <Signature />
     </div>
   );
