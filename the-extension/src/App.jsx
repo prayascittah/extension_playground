@@ -1,6 +1,8 @@
 import { useEffect, useRef, useState } from "react";
-import { LockKeyhole, LockKeyholeOpen, Timer, Settings } from "lucide-react";
 import PinButton from "./components/PinButton";
+import LockButton from "./components/LockButton";
+import TimerButton from "./components/TimerButton";
+import SettingsButton from "./components/SettingsButton";
 
 function App() {
   const [time, setTime] = useState(new Date());
@@ -84,43 +86,16 @@ function App() {
       </div>
 
       <div className="flex flex-col justify-center gap-2">
-        {/* Lock button */}
-        <button
-          onMouseEnter={() => setIsLockHovered(true)}
-          onMouseLeave={() => setIsLockHovered(false)}
-          className={`p-2 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-black ${
-            isPinned ? "bg-black text-white hover:bg-gray-800" : ""
-          }`}
-          title={
-            isPinned
-              ? "Unlock - Remove floating clock"
-              : "Lock - Pin floating clock"
-          }
-        >
-          {isPinned || isLockHovered ? (
-            <LockKeyholeOpen size={16} />
-          ) : (
-            <LockKeyhole size={16} />
-          )}
-        </button>
-
-        {/* Timer button */}
-        <button
-          onMouseEnter={() => setIsTimerHovered(true)}
-          onMouseLeave={() => setIsTimerHovered(false)}
-          className="p-2 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-black"
-          title="Pomodoro Timer"
-        >
-          <Timer size={16} />
-        </button>
-
-        {/* Settings button */}
-        <button
-          className="p-2 rounded-lg transition-colors bg-gray-200 hover:bg-gray-300 text-black"
-          title="Settings"
-        >
-          <Settings size={16} />
-        </button>
+        <LockButton
+          isPinned={isPinned}
+          isLockHovered={isLockHovered}
+          setIsLockHovered={setIsLockHovered}
+        />
+        <TimerButton
+          isTimerHovered={isTimerHovered}
+          setIsTimerHovered={setIsTimerHovered}
+        />
+        <SettingsButton />
       </div>
     </div>
   );
