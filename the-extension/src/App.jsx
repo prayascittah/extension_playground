@@ -1,11 +1,6 @@
 import { useEffect, useRef, useState } from "react";
-import {
-  LockKeyhole,
-  LockKeyholeOpen,
-  Timer,
-  Settings,
-  Pin,
-} from "lucide-react";
+import { LockKeyhole, LockKeyholeOpen, Timer, Settings } from "lucide-react";
+import PinButton from "./components/PinButton";
 
 function App() {
   const [time, setTime] = useState(new Date());
@@ -14,6 +9,23 @@ function App() {
   const [isLockHovered, setIsLockHovered] = useState(false);
   const [isTimerHovered, setIsTimerHovered] = useState(false);
   const timeoutRef = useRef();
+
+  const handlePin = () => {
+    setIsPinPinned(!isPinPinned);
+
+    // Send message to content script to toggle floating clock
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      chrome.tabs.sendMessage(
+        tabs[0].id,
+        { action: "toggleFloatingClock" },
+        (response) => {
+          if (chrome.runtime.lastError) {
+            console.log("Content script not ready, that's okay");
+          }
+        }
+      );
+    });
+  };
 
   useEffect(() => {
     const getTime = () => {
@@ -29,18 +41,7 @@ function App() {
   return (
     <div className="w-110 h-60 bg-gray-100 flex p-2">
       {/* Top section - Pin button */}
-      <div className="flex justify-start items-start">
-        <button
-          className={`p-2 rounded-lg transition-all duration-300 ${
-            isPinPinned
-              ? "bg-red-500 hover:bg-red-600 text-white rotate-45 hover:rotate-0"
-              : "bg-gray-200 hover:bg-gray-300 text-black rotate-45 hover:rotate-0"
-          }`}
-          title={isPinPinned ? "Unpin floating clock" : "Pin floating clock"}
-        >
-          <Pin size={16} />
-        </button>
-      </div>
+      <PinButton isPinPinned={isPinPinned} onPinClick={handlePin} />
 
       {/* Middle section - Clock display */}
       <div className="flex-1 flex flex-col justify-between items-center">
