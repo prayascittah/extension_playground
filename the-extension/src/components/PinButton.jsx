@@ -1,19 +1,23 @@
 import { Pin } from "lucide-react";
+import { motion } from "framer-motion";
 
 function PinButton({ isPinPinned, onPinClick }) {
   return (
     <div className="flex justify-start items-start">
-      <button
+      <motion.button
         onClick={onPinClick}
-        className={`p-2 rounded-lg transition-all duration-300 ${
-          isPinPinned
-            ? "bg-red-500 hover:bg-red-600 text-white rotate-45 hover:rotate-0"
-            : "bg-gray-200 hover:bg-gray-300 text-black rotate-45 hover:rotate-0"
-        }`}
+        className="p-2 rotate-35"
         title={isPinPinned ? "Unpin floating clock" : "Pin floating clock"}
+        whileHover={{ y: -3, scale: 1.2 }}
+        transition={{ type: "spring", stiffness: 400, damping: 25 }}
       >
-        <Pin size={16} />
-      </button>
+        <Pin
+          size={16}
+          className={`hover:fill-gray-300 transition-colors duration-200 ${
+            isPinPinned ? "text-black fill-black" : "text-black"
+          }`}
+        />
+      </motion.button>
     </div>
   );
 }

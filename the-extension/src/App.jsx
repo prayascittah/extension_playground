@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { motion } from "framer-motion";
 import PinButton from "./components/PinButton";
 import MiddleSection from "./components/MiddleSection";
 import LockButton from "./components/LockButton";
@@ -43,14 +44,35 @@ function App() {
   // Regular popup mode
   return (
     <div className="w-110 h-60 bg-gray-100 flex p-2">
-      {/* Top section - Pin button */}
-      <PinButton isPinPinned={isPinPinned} onPinClick={handlePin} />
+      {/* Left section - Pin button sliding from left */}
+      <motion.div
+        initial={{ x: -40, opacity: 0.5 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{
+          type: "spring",
+          damping: 20,
+          stiffness: 130,
+          mass: 1.5,
+        }}
+      >
+        <PinButton isPinPinned={isPinPinned} onPinClick={handlePin} />
+      </motion.div>
 
       {/* Middle section - Clock display */}
       <MiddleSection time={time} />
 
-      {/* Right section - Action buttons */}
-      <div className="flex flex-col justify-center gap-2">
+      {/* Right section - Buttons sliding from right */}
+      <motion.div
+        initial={{ x: 40, opacity: 0.5 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{
+          type: "spring",
+          damping: 20,
+          stiffness: 130,
+          mass: 1.5,
+        }}
+        className="flex flex-col justify-center gap-2"
+      >
         <LockButton
           isPinned={isPinned}
           isLockHovered={isLockHovered}
@@ -61,7 +83,7 @@ function App() {
           setIsTimerHovered={setIsTimerHovered}
         />
         <SettingsButton />
-      </div>
+      </motion.div>
     </div>
   );
 }
