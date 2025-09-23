@@ -2,9 +2,11 @@ import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
 import PinButton from "./components/PinButton";
 import MiddleSection from "./components/MiddleSection";
+import PomodoroTimer from "./components/PomodoroTimer";
 import LockButton from "./components/LockButton";
 import TimerButton from "./components/TimerButton";
 import SettingsButton from "./components/SettingsButton";
+import { useTimerLogic } from "./utils/timerUtils";
 
 function App() {
   const [time, setTime] = useState(new Date());
@@ -12,7 +14,26 @@ function App() {
   const [isPinPinned, setIsPinPinned] = useState(false);
   const [isLockHovered, setIsLockHovered] = useState(false);
   const [isTimerHovered, setIsTimerHovered] = useState(false);
+
+  // Pomodoro timer state
+  const [isTimerMode, setIsTimerMode] = useState(false);
+  const [timeLeft, setTimeLeft] = useState(3 * 60); // 3 minutes in seconds
+  const [isRunning, setIsRunning] = useState(false);
+  const [completedSessions, setCompletedSessions] = useState(0);
+  const totalTime = 3 * 60; // 3 minutes
+
   const timeoutRef = useRef();
+
+  // Use timer utility logic
+  const { startTimer, cleanupTimer } = useTimerLogic(
+    isTimerMode,
+    isRunning,
+    timeLeft,
+    totalTime,
+    setTimeLeft,
+    setIsRunning,
+    setCompletedSessions
+  );
 
   const handlePin = () => {
     setIsPinPinned(!isPinPinned);
@@ -30,6 +51,29 @@ function App() {
       );
     });
   };
+
+  const handleTimer = () => {
+    setIsTimerMode(!isTimerMode);
+    if (!isTimerMode) {
+      // Reset timer when entering timer mode
+      setTimeLeft(totalTime);
+      setIsRunning(false);
+    }
+  };
+
+  const toggleTimer = () => {
+    setIsRunning(!isRunning);
+  };
+
+  const restartTimer = () => {
+    setIsRunning(false);
+    setTimeLeft(totalTime);
+  };
+
+  useEffect(() => {
+    startTimer();
+    return cleanupTimer;
+  }, [isTimerMode, isRunning, timeLeft, totalTime]);
 
   useEffect(() => {
     const getTime = () => {
@@ -58,8 +102,19 @@ function App() {
         <PinButton isPinPinned={isPinPinned} onPinClick={handlePin} />
       </motion.div>
 
-      {/* Middle section - Clock display */}
-      <MiddleSection time={time} />
+      {/* Middle section - Clock display or Pomodoro Timer */}
+      {isTimerMode ? (
+        <PomodoroTimer
+          timeLeft={timeLeft}
+          totalTime={totalTime}
+          completedSessions={completedSessions}
+          isRunning={isRunning}
+          onToggleTimer={toggleTimer}
+          onRestartTimer={restartTimer}
+        />
+      ) : (
+        <MiddleSection time={time} />
+      )}
 
       {/* Right section - Buttons sliding from right */}
       <motion.div
@@ -81,6 +136,8 @@ function App() {
         <TimerButton
           isTimerHovered={isTimerHovered}
           setIsTimerHovered={setIsTimerHovered}
+          onTimerClick={handleTimer}
+          isTimerMode={isTimerMode}
         />
         <SettingsButton />
       </motion.div>

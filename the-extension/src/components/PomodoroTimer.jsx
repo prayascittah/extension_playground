@@ -1,0 +1,124 @@
+import { motion } from "framer-motion";
+import { Play, Pause, Square } from "lucide-react";
+import { formatTime, calculateProgress } from "../utils/timerUtils";
+
+function PomodoroTimer({
+  timeLeft,
+  totalTime,
+  completedSessions,
+  isRunning,
+  onToggleTimer,
+  onRestartTimer,
+}) {
+  const radius = 70; // Define the radius
+  const { strokeDasharray, strokeDashoffset } = calculateProgress(
+    timeLeft,
+    totalTime,
+    radius
+  );
+  const displayTime = formatTime(timeLeft);
+
+  const handlePlayPause = (e) => {
+    e.stopPropagation();
+    onToggleTimer();
+  };
+
+  const handleStop = (e) => {
+    e.stopPropagation();
+    onRestartTimer();
+  };
+
+  return (
+    <div className="flex-1 flex items-center justify-start gap-10">
+      {/* Session counter on the left */}
+      <div className="text-xs text-gray-500 text-center">
+        Focus sessions: {completedSessions}
+        <br />
+        <span className="italic">stay focused</span>
+      </div>
+
+      {/* Main timer circle */}
+      <div className="relative">
+        {/* Background circle with heartbeat animation */}
+        <motion.svg
+          width="170"
+          height="170"
+          className="transform -rotate-90"
+          animate={isRunning ? { scale: [1, 1.05, 1] } : { scale: 1 }}
+          transition={
+            isRunning
+              ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" }
+              : {}
+          }
+        >
+          <motion.circle
+            cx="85"
+            cy="85"
+            r="70"
+            stroke="#e5e7eb"
+            strokeWidth="8"
+            fill="transparent"
+            animate={isRunning ? { r: [70, 72, 70] } : { r: 70 }}
+            transition={
+              isRunning
+                ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" }
+                : {}
+            }
+          />
+          {/* Progress circle with heartbeat animation */}
+          <motion.circle
+            cx="85"
+            cy="85"
+            r="70"
+            stroke="#000000"
+            strokeWidth="8"
+            fill="transparent"
+            strokeDasharray={strokeDasharray}
+            strokeDashoffset={strokeDashoffset}
+            strokeLinecap="round"
+            className="transition-all duration-1000 ease-linear"
+            animate={isRunning ? { r: [70, 72, 70] } : { r: 70 }}
+            transition={
+              isRunning
+                ? { duration: 1.2, repeat: Infinity, ease: "easeInOut" }
+                : {}
+            }
+          />
+        </motion.svg>
+
+        {/* Timer display and controls - NO beating animation */}
+        <div className="absolute inset-0 flex flex-col items-center justify-center">
+          <div
+            className="text-2xl font-medium text-black mb-2 tracking-wider"
+            style={{ fontFamily: "Space Mono, monospace" }}
+          >
+            {displayTime}
+          </div>
+
+          {/* Control buttons */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handlePlayPause}
+              className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors w-8 h-8 flex items-center justify-center"
+            >
+              {isRunning ? (
+                <Pause size={16} className="text-black" />
+              ) : (
+                <Play size={16} className="text-black" />
+              )}
+            </button>
+
+            <button
+              onClick={handleStop}
+              className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors w-8 h-8 flex items-center justify-center"
+            >
+              <Square size={16} className="text-black" />
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+export default PomodoroTimer;

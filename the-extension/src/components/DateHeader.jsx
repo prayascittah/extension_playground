@@ -7,9 +7,9 @@ function DateHeader({ time }) {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{
-        duration: 0.9,
+        duration: 0.5,
         ease: "easeOut",
-        delay: 0.2,
+        delay: 0.4,
       }}
     >
       {time.toLocaleDateString("en-US", {
