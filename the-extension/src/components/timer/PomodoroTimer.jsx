@@ -10,7 +10,7 @@ function PomodoroTimer({
   onToggleTimer,
   onRestartTimer,
 }) {
-  const radius = 70; // Define the radius
+  const radius = 75;
   const { strokeDasharray, strokeDashoffset } = calculateProgress(
     timeLeft,
     totalTime,
@@ -30,15 +30,37 @@ function PomodoroTimer({
 
   return (
     <div className="flex-1 flex items-center justify-start gap-10">
-      {/* Session counter on the left */}
-      <div className="text-xs text-gray-500 text-center">
+      {/* Session counter on the left - slides in from left */}
+      <motion.div
+        className="text-xs text-gray-500 text-center"
+        initial={{ x: -40, opacity: 0 }}
+        animate={{ x: 0, opacity: 1 }}
+        transition={{
+          type: "spring",
+          damping: 20,
+          stiffness: 110,
+          mass: 1.5,
+          delay: 0.2,
+        }}
+      >
         Focus sessions: {completedSessions}
         <br />
         <span className="italic">stay focused</span>
-      </div>
+      </motion.div>
 
-      {/* Main timer circle */}
-      <div className="relative">
+      {/* Main timer circle - scales up */}
+      <motion.div
+        className="relative"
+        initial={{ scale: 0.3 }}
+        animate={{ scale: 1 }}
+        transition={{
+          type: "spring",
+          damping: 20,
+          stiffness: 80,
+          mass: 1,
+          duration: 0.8,
+        }}
+      >
         {/* Background circle with heartbeat animation */}
         <motion.svg
           width="170"
@@ -88,10 +110,7 @@ function PomodoroTimer({
 
         {/* Timer display and controls - NO beating animation */}
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div
-            className="text-2xl font-medium text-black mb-2 tracking-wider"
-            style={{ fontFamily: "Space Mono, monospace" }}
-          >
+          <div className="text-2xl font-medium text-black mb-2 tracking-wider">
             {displayTime}
           </div>
 
@@ -116,7 +135,7 @@ function PomodoroTimer({
             </button>
           </div>
         </div>
-      </div>
+      </motion.div>
     </div>
   );
 }

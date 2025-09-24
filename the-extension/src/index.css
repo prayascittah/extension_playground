@@ -1,13 +1,23 @@
 @import "tailwindcss";
 
-/* Apply Inter font globally */
+/* Apply Space Mono font globally */
 * {
-  font-family: "Inter", sans-serif;
+  font-family: "Space Mono", monospace;
 }
 
-/* Apply Space Mono for monospace elements */
-.font-mono,
-code,
-pre {
+/* Ensure consistent font across all elements */
+body,
+html,
+div,
+span,
+p,
+h1,
+h2,
+h3,
+h4,
+h5,
+h6,
+button,
+input {
   font-family: "Space Mono", monospace;
 }

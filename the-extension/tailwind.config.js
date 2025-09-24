@@ -2,7 +2,12 @@
 export default {
   content: ["./index.html", "./src/**/*.{js,ts,jsx,tsx}"],
   theme: {
-    extend: {},
+    extend: {
+      fontFamily: {
+        mono: ["Space Mono", "monospace"],
+        sans: ["Space Mono", "monospace"],
+      },
+    },
   },
   plugins: [require("daisyui")],
   daisyui: {
