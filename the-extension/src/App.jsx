@@ -6,6 +6,7 @@ import {
   SettingsButton,
   TimerButton,
   BackButton,
+  SettingsPage,
 } from "./components/common";
 import { MiddleSection } from "./components/clock";
 import { PomodoroTimer } from "./components/timer";
@@ -19,12 +20,19 @@ function App() {
   const [isTimerHovered, setIsTimerHovered] = useState(false);
   const [isSettingsMode, setIsSettingsMode] = useState(false);
 
+  // Settings state
+  const [settings, setSettings] = useState({
+    pomodoroTime: 3, // Default 3 minutes
+    breakTime: 5,
+    theme: "light",
+  });
+
   // Pomodoro timer state
   const [isTimerMode, setIsTimerMode] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(3 * 60); // 3 minutes in seconds
+  const [timeLeft, setTimeLeft] = useState(settings.pomodoroTime * 60); // Use settings
   const [isRunning, setIsRunning] = useState(false);
   const [completedSessions, setCompletedSessions] = useState(0);
-  const totalTime = 3 * 60; // 3 minutes
+  const totalTime = settings.pomodoroTime * 60; // Use settings
 
   const timeoutRef = useRef();
 
@@ -82,6 +90,22 @@ function App() {
     setTimeLeft(totalTime);
   };
 
+  const handleSettings = () => {
+    setIsSettingsMode(!isSettingsMode);
+  };
+
+  const handleSettingsSave = (newSettings) => {
+    setSettings(newSettings);
+    // Update timer if settings changed
+    const newTotalTime = newSettings.pomodoroTime * 60;
+    setTimeLeft(newTotalTime);
+    setIsSettingsMode(false);
+  };
+
+  const handleSettingsClose = () => {
+    setIsSettingsMode(false);
+  };
+
   // Check if we should show the back button (any non-clock mode)
   const showBackButton = isTimerMode || isSettingsMode || isPinned;
 
@@ -116,14 +140,17 @@ function App() {
         className="flex flex-col items-center"
       >
         <PinButton isPinPinned={isPinPinned} onPinClick={handlePin} />
-        <BackButton 
-          onBackClick={handleBack} 
-          isVisible={showBackButton}
-        />
+        <BackButton onBackClick={handleBack} isVisible={showBackButton} />
       </motion.div>
 
-      {/* Middle section - Clock display or Pomodoro Timer */}
-      {isTimerMode ? (
+      {/* Middle section - Clock display, Pomodoro Timer, or Settings */}
+      {isSettingsMode ? (
+        <SettingsPage
+          currentSettings={settings}
+          onSave={handleSettingsSave}
+          onClose={handleSettingsClose}
+        />
+      ) : isTimerMode ? (
         <PomodoroTimer
           timeLeft={timeLeft}
           totalTime={totalTime}
@@ -159,7 +186,10 @@ function App() {
           onTimerClick={handleTimer}
           isTimerMode={isTimerMode}
         />
-        <SettingsButton />
+        <SettingsButton
+          onSettingsClick={handleSettings}
+          isSettingsMode={isSettingsMode}
+        />
       </motion.div>
     </div>
   );
