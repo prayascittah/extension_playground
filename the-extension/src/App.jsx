@@ -6,9 +6,9 @@ import {
   SettingsButton,
   TimerButton,
   BackButton,
-  SettingsPage,
 } from "./components/common";
 import { MiddleSection } from "./components/clock";
+import { SettingsPage } from "./components/settings";
 import { PomodoroTimer } from "./components/timer";
 import { useTimerLogic } from "./utils/timerUtils";
 
