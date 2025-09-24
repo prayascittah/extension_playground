@@ -1,11 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { motion } from "framer-motion";
-import PinButton from "./components/PinButton";
-import MiddleSection from "./components/MiddleSection";
-import PomodoroTimer from "./components/PomodoroTimer";
-import LockButton from "./components/LockButton";
-import TimerButton from "./components/TimerButton";
-import SettingsButton from "./components/SettingsButton";
+import {
+  PinButton,
+  LockButton,
+  SettingsButton,
+  TimerButton,
+} from "./components/common";
+import { MiddleSection } from "./components/clock";
+import { PomodoroTimer } from "./components/timer";
 import { useTimerLogic } from "./utils/timerUtils";
 
 function App() {

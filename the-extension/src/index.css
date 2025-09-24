@@ -2,10 +2,12 @@
 
 /* Apply Inter font globally */
 * {
-  font-family: 'Inter', sans-serif;
+  font-family: "Inter", sans-serif;
 }
 
 /* Apply Space Mono for monospace elements */
-.font-mono, code, pre {
-  font-family: 'Space Mono', monospace;
+.font-mono,
+code,
+pre {
+  font-family: "Space Mono", monospace;
 }

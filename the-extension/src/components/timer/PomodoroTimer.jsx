@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { Play, Pause, Square } from "lucide-react";
-import { formatTime, calculateProgress } from "../utils/timerUtils";
+import { formatTime, calculateProgress } from "../../utils/timerUtils";
 
 function PomodoroTimer({
   timeLeft,
