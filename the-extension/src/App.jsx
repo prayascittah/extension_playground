@@ -5,6 +5,7 @@ import {
   LockButton,
   SettingsButton,
   TimerButton,
+  BackButton,
 } from "./components/common";
 import { MiddleSection } from "./components/clock";
 import { PomodoroTimer } from "./components/timer";
@@ -16,6 +17,7 @@ function App() {
   const [isPinPinned, setIsPinPinned] = useState(false);
   const [isLockHovered, setIsLockHovered] = useState(false);
   const [isTimerHovered, setIsTimerHovered] = useState(false);
+  const [isSettingsMode, setIsSettingsMode] = useState(false);
 
   // Pomodoro timer state
   const [isTimerMode, setIsTimerMode] = useState(false);
@@ -72,6 +74,17 @@ function App() {
     setTimeLeft(totalTime);
   };
 
+  const handleBack = () => {
+    // Reset all modes to go back to clock
+    setIsTimerMode(false);
+    setIsSettingsMode(false);
+    setIsRunning(false);
+    setTimeLeft(totalTime);
+  };
+
+  // Check if we should show the back button (any non-clock mode)
+  const showBackButton = isTimerMode || isSettingsMode || isPinned;
+
   useEffect(() => {
     startTimer();
     return cleanupTimer;
@@ -90,7 +103,7 @@ function App() {
   // Regular popup mode
   return (
     <div className="w-110 h-60 bg-gray-100 flex p-2">
-      {/* Left section - Pin button sliding from left */}
+      {/* Left section - Pin button and Back button sliding from left */}
       <motion.div
         initial={{ x: -40, opacity: 0.5 }}
         animate={{ x: 0, opacity: 1 }}
@@ -100,8 +113,13 @@ function App() {
           stiffness: 130,
           mass: 1.5,
         }}
+        className="flex flex-col items-center"
       >
         <PinButton isPinPinned={isPinPinned} onPinClick={handlePin} />
+        <BackButton 
+          onBackClick={handleBack} 
+          isVisible={showBackButton}
+        />
       </motion.div>
 
       {/* Middle section - Clock display or Pomodoro Timer */}
