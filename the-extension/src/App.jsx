@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { useAppStore } from "./store/appStore";
 import { motion } from "framer-motion";
 import {
   PinButton,
@@ -10,47 +11,51 @@ import {
 import { MiddleSection } from "./components/clock";
 import { SettingsPage } from "./components/settings";
 import { PomodoroTimer } from "./components/timer";
+import BreakTimer from "./components/timer/BreakTimer";
 import { useTimerLogic } from "./utils/timerUtils";
 
 function App() {
-  const [time, setTime] = useState(new Date());
-  const [isPinned, setIsPinned] = useState(false);
-  const [isPinPinned, setIsPinPinned] = useState(false);
-  const [isLockHovered, setIsLockHovered] = useState(false);
-  const [isTimerHovered, setIsTimerHovered] = useState(false);
-  const [isSettingsMode, setIsSettingsMode] = useState(false);
-
-  // Settings state
-  const [settings, setSettings] = useState({
-    pomodoroTime: 3, // Default 3 minutes
-    breakTime: 5,
-    theme: "light",
-  });
-
-  // Pomodoro timer state
-  const [isTimerMode, setIsTimerMode] = useState(false);
-  const [timeLeft, setTimeLeft] = useState(settings.pomodoroTime * 60); // Use settings
-  const [isRunning, setIsRunning] = useState(false);
-  const [completedSessions, setCompletedSessions] = useState(0);
-  const totalTime = settings.pomodoroTime * 60; // Use settings
-
+  const [isBreakMode, setIsBreakMode] = useState(false);
+  const {
+    time,
+    setTime,
+    isPinned,
+    setIsPinned,
+    isPinPinned,
+    setIsPinPinned,
+    isLockHovered,
+    setIsLockHovered,
+    isTimerHovered,
+    setIsTimerHovered,
+    isSettingsMode,
+    setIsSettingsMode,
+    settings,
+    setSettings,
+    isTimerMode,
+    setIsTimerMode,
+    timeLeft,
+    setTimeLeft,
+    isRunning,
+    setIsRunning,
+    completedSessions,
+    setCompletedSessions,
+  } = useAppStore();
+  const totalTime = settings.pomodoroTime * 60;
   const timeoutRef = useRef();
 
-  // Use timer utility logic
+  // Use timer utility logic for both Pomodoro and break
   const { startTimer, cleanupTimer } = useTimerLogic(
-    isTimerMode,
     isRunning,
     timeLeft,
-    totalTime,
+    isBreakMode ? settings.breakTime * 60 : totalTime,
     setTimeLeft,
     setIsRunning,
+    isBreakMode,
     setCompletedSessions
   );
 
   const handlePin = () => {
     setIsPinPinned(!isPinPinned);
-
-    // Send message to content script to toggle floating clock
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       chrome.tabs.sendMessage(
         tabs[0].id,
@@ -65,9 +70,9 @@ function App() {
   };
 
   const handleTimer = () => {
+    setIsSettingsMode(false);
     setIsTimerMode(!isTimerMode);
     if (!isTimerMode) {
-      // Reset timer when entering timer mode
       setTimeLeft(totalTime);
       setIsRunning(false);
     }
@@ -83,7 +88,6 @@ function App() {
   };
 
   const handleBack = () => {
-    // Reset all modes to go back to clock
     setIsTimerMode(false);
     setIsSettingsMode(false);
     setIsRunning(false);
@@ -91,15 +95,16 @@ function App() {
   };
 
   const handleSettings = () => {
+    setIsTimerMode(false);
     setIsSettingsMode(!isSettingsMode);
   };
 
   const handleSettingsSave = (newSettings) => {
     setSettings(newSettings);
-    // Update timer if settings changed
     const newTotalTime = newSettings.pomodoroTime * 60;
     setTimeLeft(newTotalTime);
     setIsSettingsMode(false);
+    setIsTimerMode(true);
   };
 
   const handleSettingsClose = () => {
@@ -112,7 +117,36 @@ function App() {
   useEffect(() => {
     startTimer();
     return cleanupTimer;
-  }, [isTimerMode, isRunning, timeLeft, totalTime]);
+  }, [
+    isTimerMode,
+    isRunning,
+    timeLeft,
+    totalTime,
+    isBreakMode,
+    settings.breakTime,
+  ]);
+
+  useEffect(() => {
+    if (isTimerMode && timeLeft === 0 && !isBreakMode) {
+      setIsBreakMode(true);
+      setTimeLeft(settings.breakTime * 60);
+      setIsRunning(true); // Start break timer immediately
+    } else if (isBreakMode && timeLeft === 0) {
+      setIsBreakMode(false);
+      setTimeLeft(settings.pomodoroTime * 60);
+      setIsRunning(true); // Start next Pomodoro automatically
+      setCompletedSessions(prev => prev + 1);
+    }
+  }, [
+    timeLeft,
+    isTimerMode,
+    isBreakMode,
+    settings.breakTime,
+    settings.pomodoroTime,
+    setCompletedSessions,
+    setTimeLeft,
+    setIsRunning,
+  ]);
 
   useEffect(() => {
     const getTime = () => {
@@ -151,14 +185,24 @@ function App() {
           onClose={handleSettingsClose}
         />
       ) : isTimerMode ? (
-        <PomodoroTimer
-          timeLeft={timeLeft}
-          totalTime={totalTime}
-          completedSessions={completedSessions}
-          isRunning={isRunning}
-          onToggleTimer={toggleTimer}
-          onRestartTimer={restartTimer}
-        />
+        isBreakMode ? (
+          <BreakTimer
+            timeLeft={timeLeft}
+            totalTime={settings.breakTime * 60}
+            isRunning={isRunning}
+            onToggleTimer={toggleTimer}
+            onRestartTimer={restartTimer}
+          />
+        ) : (
+          <PomodoroTimer
+            timeLeft={timeLeft}
+            totalTime={totalTime}
+            completedSessions={completedSessions}
+            isRunning={isRunning}
+            onToggleTimer={toggleTimer}
+            onRestartTimer={restartTimer}
+          />
+        )
       ) : (
         <MiddleSection time={time} />
       )}

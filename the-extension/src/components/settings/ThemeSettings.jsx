@@ -6,16 +6,16 @@ function ThemeSettings({
   handleThemeSelect,
 }) {
   return (
-    <div className="mb-4">
-      <h3 className="text-sm text-black mb-2">Theme</h3>
+    <div className="flex gap-2 items-center">
+      <span className="text-sm text-black">Theme: </span>
       <select
         value={selectedTheme}
         onChange={(e) => handleThemeSelect(e.target.value)}
         onFocus={(e) => handleThemeHover(e.target.value)}
-        className="w-4/5 p-2 border border-gray-300 rounded bg-white text-black text-sm focus:outline-none focus:border-black"
+        className="p-2 border border-gray-300 rounded bg-white text-black text-sm focus:outline-none focus:border-black w-32"
       >
         {themes.map((theme) => (
-          <option key={theme} value={theme}>
+          <option key={theme} value={theme} className="text-sm px-2">
             {theme.charAt(0).toUpperCase() + theme.slice(1)}
           </option>
         ))}

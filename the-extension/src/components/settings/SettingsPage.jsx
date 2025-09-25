@@ -1,18 +1,18 @@
-import { useState } from "react";
+import { useAppStore } from "../../store/appStore";
 import { motion } from "framer-motion";
-import PomodoroTimerSetting from "./PomodoroTimerSetting";
-import BreakTimerSetting from "./BreakTimerSetting";
+import TimerSetting from "./TimerSetting";
 import ThemeSettings from "./ThemeSettings";
 import SettingsActions from "./SettingsActions";
 
-function SettingsPage({ onClose, onSave, currentSettings }) {
-  const [pomodoroTime, setPomodoroTime] = useState(
-    currentSettings.pomodoroTime || 25
-  );
-  const [breakTime, setBreakTime] = useState(currentSettings.breakTime || 5);
-  const [selectedTheme, setSelectedTheme] = useState(
-    currentSettings.theme || "light"
-  );
+function SettingsPage({ onClose, onSave }) {
+  const { settings, setSettings } = useAppStore();
+  const pomodoroTime = settings.pomodoroTime;
+  const breakTime = settings.breakTime;
+  const selectedTheme = settings.theme;
+  const setPomodoroTime = (val) =>
+    setSettings({ ...settings, pomodoroTime: val });
+  const setBreakTime = (val) => setSettings({ ...settings, breakTime: val });
+  const setSelectedTheme = (val) => setSettings({ ...settings, theme: val });
 
   // DaisyUI themes available
   const themes = [
@@ -59,25 +59,20 @@ function SettingsPage({ onClose, onSave, currentSettings }) {
   };
 
   const handleSave = () => {
-    onSave({
-      pomodoroTime,
-      breakTime,
-      theme: selectedTheme,
-    });
+    onSave({ pomodoroTime, breakTime, theme: selectedTheme });
   };
 
   const handleClose = () => {
-    // Reset to original theme if closing without saving
     document.documentElement.setAttribute(
       "data-theme",
-      currentSettings.theme || "light"
+      selectedTheme || "light"
     );
     onClose();
   };
 
   return (
     <motion.div
-      className="flex flex-col items-center gap-3"
+      className="flex flex-col justify-between gap-3 flex-1 pl-3"
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ opacity: 1, scale: 1 }}
       transition={{
@@ -88,16 +83,25 @@ function SettingsPage({ onClose, onSave, currentSettings }) {
       }}
     >
       {/* Timer Settings */}
-      <div className="flex flex-col gap-4 p-5 rounded-lg bg-base-200 w-4/5 max-w-md items-center">
-        <PomodoroTimerSetting
-          pomodoroTime={pomodoroTime}
-          setPomodoroTime={setPomodoroTime}
+      <div className="flex flex-col gap-5 py-2.5 rounded-lg bg-base-200 items-center w-4/5">
+        <TimerSetting
+          label="Pomodoro time"
+          value={pomodoroTime}
+          setValue={setPomodoroTime}
+          min={1}
+          max={60}
         />
-        <BreakTimerSetting breakTime={breakTime} setBreakTime={setBreakTime} />
+        <TimerSetting
+          label="Break time"
+          value={breakTime}
+          setValue={setBreakTime}
+          min={1}
+          max={60}
+        />
       </div>
 
       {/* Theme Selection */}
-      <div className="rounded-lg bg-base-200 w-4/5 max-w-md items-center mt-4">
+      <div className="rounded-lg bg-base-200 items-center">
         <ThemeSettings
           selectedTheme={selectedTheme}
           setSelectedTheme={setSelectedTheme}

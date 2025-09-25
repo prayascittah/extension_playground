@@ -1,25 +1,23 @@
 // Timer utility functions
 
 export const useTimerLogic = (
-  isTimerMode,
   isRunning,
   timeLeft,
   totalTime,
   setTimeLeft,
   setIsRunning,
+  isBreakMode,
   setCompletedSessions
 ) => {
   const timerRef = { current: null };
 
   const startTimer = () => {
-    if (isTimerMode && isRunning && timeLeft > 0) {
+    if (isRunning && timeLeft > 0) {
       timerRef.current = setTimeout(() => {
         setTimeLeft(timeLeft - 1);
       }, 1000);
     } else if (timeLeft === 0) {
-      // Timer completed
       setIsRunning(false);
-      setCompletedSessions((prev) => prev + 1);
       setTimeLeft(totalTime); // Reset for next session
     }
   };
