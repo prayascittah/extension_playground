@@ -40,14 +40,14 @@ function App() {
     completedSessions,
     setCompletedSessions,
   } = useAppStore();
-  const totalTime = settings.pomodoroTime; // ms
+  const totalTime = settings.pomodoroTime * 60;
   const timeoutRef = useRef();
 
   // Use timer utility logic for both Pomodoro and break
   const { startTimer, cleanupTimer } = useTimerLogic(
     isRunning,
     timeLeft,
-    isBreakMode ? settings.breakTime : totalTime,
+    isBreakMode ? settings.breakTime * 60 : totalTime,
     setTimeLeft,
     setIsRunning,
     isBreakMode,
@@ -75,6 +75,7 @@ function App() {
     if (!isTimerMode) {
       setTimeLeft(totalTime);
       setIsRunning(false);
+      setIsBreakMode(false);
     }
   };
 
@@ -84,13 +85,18 @@ function App() {
 
   const restartTimer = () => {
     setIsRunning(false);
-    setTimeLeft(totalTime);
+    if (isBreakMode) {
+      setTimeLeft(settings.breakTime * 60);
+    } else {
+      setTimeLeft(totalTime);
+    }
   };
 
   const handleBack = () => {
     setIsTimerMode(false);
     setIsSettingsMode(false);
     setIsRunning(false);
+    setIsBreakMode(false);
     setTimeLeft(totalTime);
   };
 
@@ -99,9 +105,16 @@ function App() {
     setIsSettingsMode(!isSettingsMode);
   };
 
+  const handleLock = () => {
+    // Open URL management page
+    chrome.tabs.create({
+      url: chrome.runtime.getURL("url-blocker.html"),
+    });
+  };
+
   const handleSettingsSave = (newSettings) => {
     setSettings(newSettings);
-    const newTotalTime = newSettings.pomodoroTime;
+    const newTotalTime = newSettings.pomodoroTime * 60;
     setTimeLeft(newTotalTime);
     setIsSettingsMode(false);
     setIsTimerMode(true);
@@ -115,32 +128,34 @@ function App() {
   const showBackButton = isTimerMode || isSettingsMode || isPinned;
 
   useEffect(() => {
-    startTimer();
+    if (isTimerMode) {
+      startTimer();
+    } else {
+      cleanupTimer();
+    }
     return cleanupTimer;
-  }, [
-    isTimerMode,
-    isRunning,
-    timeLeft,
-    totalTime,
-    isBreakMode,
-    settings.breakTime,
-  ]);
+  }, [isTimerMode, startTimer, cleanupTimer]);
 
   useEffect(() => {
-    if (isTimerMode && timeLeft === 0 && !isBreakMode) {
-      setIsBreakMode(true);
-      setTimeLeft(settings.breakTime);
-      setIsRunning(true); // Start break timer immediately
-    } else if (isBreakMode && timeLeft === 0) {
-      setIsBreakMode(false);
-      setTimeLeft(settings.pomodoroTime);
-      setIsRunning(true); // Start next Pomodoro automatically
-      setCompletedSessions((prev) => prev + 1);
+    if (isTimerMode && timeLeft === 0 && isRunning === false) {
+      if (!isBreakMode) {
+        // Pomodoro session completed, start break
+        setIsBreakMode(true);
+        setTimeLeft(settings.breakTime * 60);
+        setIsRunning(false); // Don't auto-start break
+      } else {
+        // Break completed, start next Pomodoro
+        setIsBreakMode(false);
+        setTimeLeft(settings.pomodoroTime * 60);
+        setIsRunning(false); // Don't auto-start next session
+        setCompletedSessions((prev) => prev + 1);
+      }
     }
   }, [
     timeLeft,
     isTimerMode,
     isBreakMode,
+    isRunning,
     settings.breakTime,
     settings.pomodoroTime,
     setCompletedSessions,
@@ -188,7 +203,7 @@ function App() {
         isBreakMode ? (
           <BreakTimer
             timeLeft={timeLeft}
-            totalTime={settings.breakTime}
+            totalTime={settings.breakTime * 60}
             isRunning={isRunning}
             onToggleTimer={toggleTimer}
             onRestartTimer={restartTimer}
@@ -223,9 +238,9 @@ function App() {
           isPinned={isPinned}
           isLockHovered={isLockHovered}
           setIsLockHovered={setIsLockHovered}
+          onLockClick={handleLock}
         />
         <TimerButton
-          isTimerHovered={isTimerHovered}
           setIsTimerHovered={setIsTimerHovered}
           onTimerClick={handleTimer}
           isTimerMode={isTimerMode}

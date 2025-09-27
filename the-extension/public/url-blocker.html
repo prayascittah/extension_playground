@@ -1,0 +1,54 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>LockIn - URL Blocker</title>
+    <link rel="stylesheet" href="url-blocker.css" />
+  </head>
+  <body>
+    <div class="container">
+      <div class="header">
+        <h1>🔒 LockIn</h1>
+        <p>Block distracting websites to stay focused</p>
+        <div class="quote">
+          "The cave you fear to enter holds the treasure you seek." - Joseph
+          Campbell
+        </div>
+        <div class="status-indicator">
+          <div class="status-dot"></div>
+          LockIn Active
+        </div>
+      </div>
+
+      <div class="url-input-section">
+        <div class="input-group">
+          <input
+            type="url"
+            id="urlInput"
+            class="url-input"
+            placeholder="Enter URL to block"
+            autocomplete="off"
+          />
+          <button id="addUrlBtn" class="add-btn">🚫 Block</button>
+        </div>
+      </div>
+
+      <div class="blocked-urls">
+        <h2 class="section-title">📋 Blocked & Forgotten</h2>
+        <ul id="urlList" class="url-list">
+          <!-- URLs will be populated here -->
+        </ul>
+        <div id="emptyState" class="empty-state">
+          <div class="emoji">🦄</div>
+          <p>No URLs blocked yet</p>
+          <p class="empty-state-subtitle">
+            Add some distracting websites above to get started!
+          </p>
+        </div>
+      </div>
+    </div>
+
+    <script src="url-blocker.js"></script>
+  </body>
+</html>

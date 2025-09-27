@@ -1,11 +1,6 @@
 import { Timer } from "lucide-react";
 
-function TimerButton({
-  isTimerHovered,
-  setIsTimerHovered,
-  onTimerClick,
-  isTimerMode,
-}) {
+function TimerButton({ setIsTimerHovered, onTimerClick, isTimerMode }) {
   return (
     <button
       onClick={onTimerClick}
@@ -16,7 +11,7 @@ function TimerButton({
           ? "bg-black text-white hover:bg-gray-800"
           : "bg-gray-200 hover:bg-gray-300 text-black"
       }`}
-      title={isTimerMode ? "Exit Pomodoro Timer" : "Start Pomodoro Timer"}
+      title="Pomodoro Timer"
     >
       <Timer size={16} />
     </button>
