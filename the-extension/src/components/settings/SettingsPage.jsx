@@ -6,12 +6,15 @@ import SettingsActions from "./SettingsActions";
 
 function SettingsPage({ onClose, onSave }) {
   const { settings, setSettings } = useAppStore();
-  const pomodoroTime = settings.pomodoroTime;
-  const breakTime = settings.breakTime;
+  // Convert ms to min for display
+  const pomodoroTime = Math.round(settings.pomodoroTime / 60000);
+  const breakTime = Math.round(settings.breakTime / 60000);
   const selectedTheme = settings.theme;
+  // Convert min back to ms when saving
   const setPomodoroTime = (val) =>
-    setSettings({ ...settings, pomodoroTime: val });
-  const setBreakTime = (val) => setSettings({ ...settings, breakTime: val });
+    setSettings({ ...settings, pomodoroTime: val * 60000 });
+  const setBreakTime = (val) =>
+    setSettings({ ...settings, breakTime: val * 60000 });
   const setSelectedTheme = (val) => setSettings({ ...settings, theme: val });
 
   // DaisyUI themes available
@@ -59,7 +62,11 @@ function SettingsPage({ onClose, onSave }) {
   };
 
   const handleSave = () => {
-    onSave({ pomodoroTime, breakTime, theme: selectedTheme });
+    onSave({
+      pomodoroTime: pomodoroTime * 60000,
+      breakTime: breakTime * 60000,
+      theme: selectedTheme,
+    });
   };
 
   const handleClose = () => {

@@ -14,14 +14,14 @@ export const useAppStore = create((set) => ({
   isSettingsMode: false,
   setIsSettingsMode: (v) => set({ isSettingsMode: v }),
   settings: {
-    pomodoroTime: 1,
-    breakTime: 1,
+    pomodoroTime: 1 * 60 * 1000, // 1 minute in ms
+    breakTime: 1 * 60 * 1000, // 1 minute in ms
     theme: "light",
   },
   setSettings: (s) => set({ settings: s }),
   isTimerMode: false,
   setIsTimerMode: (v) => set({ isTimerMode: v }),
-  timeLeft: 1 * 60,
+  timeLeft: 1 * 60 * 1000, // 1 minute in ms
   setTimeLeft: (v) => set({ timeLeft: v }),
   isRunning: false,
   setIsRunning: (v) => set({ isRunning: v }),

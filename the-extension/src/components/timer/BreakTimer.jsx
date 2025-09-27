@@ -10,6 +10,7 @@ function BreakTimer({
   onRestartTimer,
 }) {
   const radius = 75;
+  const timerTickInterval = 1000; // ms, matches setTimeout in timerUtils
   const { strokeDasharray, strokeDashoffset } = calculateProgress(
     timeLeft,
     totalTime,
@@ -86,18 +87,23 @@ function BreakTimer({
             cx="85"
             cy="85"
             r="70"
-            stroke="#000000" // monochrome black
+            stroke="#000000"
             strokeWidth="8"
             fill="transparent"
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
-            className="transition-all duration-1000 ease-linear"
+            className={
+              isRunning ? "transition-all ease-linear" : "transition-none"
+            }
+            style={
+              isRunning ? { transitionDuration: `${timerTickInterval}ms` } : {}
+            }
             animate={isRunning ? { r: [70, 72, 70] } : { r: 70 }}
             transition={
               isRunning
                 ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
-                : {}
+                : { duration: 0 }
             }
           />
         </motion.svg>

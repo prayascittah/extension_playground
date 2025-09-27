@@ -40,14 +40,14 @@ function App() {
     completedSessions,
     setCompletedSessions,
   } = useAppStore();
-  const totalTime = settings.pomodoroTime * 60;
+  const totalTime = settings.pomodoroTime; // ms
   const timeoutRef = useRef();
 
   // Use timer utility logic for both Pomodoro and break
   const { startTimer, cleanupTimer } = useTimerLogic(
     isRunning,
     timeLeft,
-    isBreakMode ? settings.breakTime * 60 : totalTime,
+    isBreakMode ? settings.breakTime : totalTime,
     setTimeLeft,
     setIsRunning,
     isBreakMode,
@@ -101,7 +101,7 @@ function App() {
 
   const handleSettingsSave = (newSettings) => {
     setSettings(newSettings);
-    const newTotalTime = newSettings.pomodoroTime * 60;
+    const newTotalTime = newSettings.pomodoroTime;
     setTimeLeft(newTotalTime);
     setIsSettingsMode(false);
     setIsTimerMode(true);
@@ -129,13 +129,13 @@ function App() {
   useEffect(() => {
     if (isTimerMode && timeLeft === 0 && !isBreakMode) {
       setIsBreakMode(true);
-      setTimeLeft(settings.breakTime * 60);
+      setTimeLeft(settings.breakTime);
       setIsRunning(true); // Start break timer immediately
     } else if (isBreakMode && timeLeft === 0) {
       setIsBreakMode(false);
-      setTimeLeft(settings.pomodoroTime * 60);
+      setTimeLeft(settings.pomodoroTime);
       setIsRunning(true); // Start next Pomodoro automatically
-      setCompletedSessions(prev => prev + 1);
+      setCompletedSessions((prev) => prev + 1);
     }
   }, [
     timeLeft,
@@ -188,7 +188,7 @@ function App() {
         isBreakMode ? (
           <BreakTimer
             timeLeft={timeLeft}
-            totalTime={settings.breakTime * 60}
+            totalTime={settings.breakTime}
             isRunning={isRunning}
             onToggleTimer={toggleTimer}
             onRestartTimer={restartTimer}

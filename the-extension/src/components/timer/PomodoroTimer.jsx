@@ -11,6 +11,7 @@ function PomodoroTimer({
   onRestartTimer,
 }) {
   const radius = 75;
+  const timerTickInterval = 1000; // ms, matches setTimeout in timerUtils
   const { strokeDasharray, strokeDashoffset } = calculateProgress(
     timeLeft,
     totalTime,
@@ -43,7 +44,7 @@ function PomodoroTimer({
           delay: 0.2,
         }}
       >
-        Focus sessions: {completedSessions + 1}
+        Focus sessions: {completedSessions}
         <br />
         <span className="italic">stay focused</span>
       </motion.div>
@@ -98,7 +99,12 @@ function PomodoroTimer({
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
-            className={isRunning ? "transition-all duration-1000 ease-linear" : "transition-none"}
+            className={
+              isRunning ? "transition-all ease-linear" : "transition-none"
+            }
+            style={
+              isRunning ? { transitionDuration: `${timerTickInterval}ms` } : {}
+            }
             animate={isRunning ? { r: [70, 72, 70] } : { r: 70 }}
             transition={
               isRunning
