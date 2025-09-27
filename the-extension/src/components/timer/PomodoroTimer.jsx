@@ -98,12 +98,12 @@ function PomodoroTimer({
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
-            className="transition-all duration-1000 ease-linear"
+            className={isRunning ? "transition-all duration-1000 ease-linear" : "transition-none"}
             animate={isRunning ? { r: [70, 72, 70] } : { r: 70 }}
             transition={
               isRunning
                 ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
-                : {}
+                : { duration: 0 }
             }
           />
         </motion.svg>
