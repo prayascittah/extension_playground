@@ -10,7 +10,7 @@ export const useTimerLogic = (
   setCompletedSessions
 ) => {
   const timerRef = { current: null };
-  const interval = 500; // ms
+  const interval = 1000; // ms
 
   const startTimer = () => {
     if (isRunning && timeLeft > 0) {
@@ -19,7 +19,7 @@ export const useTimerLogic = (
       }, interval);
     } else if (timeLeft === 0) {
       setIsRunning(false);
-      setTimeLeft(totalTime); // Reset for next session
+      setTimeLeft(totalTime);
     }
   };
 
@@ -43,22 +43,15 @@ export const formatTime = (timeInSeconds) => {
 };
 
 export const calculateProgress = (timeLeft, totalTime, radius) => {
-  // Use ms for smooth progress
+  // Sync progress to displayed seconds for perfect alignment
+  const displayedSeconds = Math.floor(timeLeft / 1000);
+  const totalSeconds = Math.floor(totalTime / 1000);
   let progress;
-  if (timeLeft > 0) {
-    progress = ((totalTime - timeLeft) / totalTime) * 100;
+  if (displayedSeconds > 0) {
+    progress = ((totalSeconds - displayedSeconds) / totalSeconds) * 100;
   } else {
     progress = 100;
   }
-  // Log progress for debugging
-  console.log(
-    "Progress (float):",
-    progress,
-    "timeLeft:",
-    timeLeft,
-    "totalTime:",
-    totalTime
-  );
   if (progress < 0) progress = 0;
   if (progress > 100) progress = 100;
   const strokeDasharray = 2 * Math.PI * radius;

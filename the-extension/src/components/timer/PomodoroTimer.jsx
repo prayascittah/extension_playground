@@ -99,12 +99,8 @@ function PomodoroTimer({
             strokeDasharray={strokeDasharray}
             strokeDashoffset={strokeDashoffset}
             strokeLinecap="round"
-            className={
-              isRunning ? "transition-all ease-linear" : "transition-none"
-            }
-            style={
-              isRunning ? { transitionDuration: `${timerTickInterval}ms` } : {}
-            }
+            className="transition-none"
+            style={{}}
             animate={isRunning ? { r: [70, 72, 70] } : { r: 70 }}
             transition={
               isRunning
