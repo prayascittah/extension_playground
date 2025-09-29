@@ -11,11 +11,10 @@ function BreakTimer({
 }) {
   const radius = 75;
   const timerTickInterval = 1000; // ms, matches setTimeout in timerUtils
-  const { strokeDasharray, strokeDashoffset } = calculateProgress(
-    timeLeft,
-    totalTime,
-    radius
-  );
+  const { strokeDasharray, strokeDashoffset } =
+    timeLeft && totalTime
+      ? calculateProgress(timeLeft, totalTime, radius)
+      : { strokeDasharray: 0, strokeDashoffset: 0 };
   const displayTime = formatTime(timeLeft);
 
   const handlePlayPause = (e) => {
@@ -99,7 +98,7 @@ function BreakTimer({
             style={
               isRunning ? { transitionDuration: `${timerTickInterval}ms` } : {}
             }
-            animate={isRunning ? { r: [70, 72, 70] } : { r: 70 }}
+            animate={isRunning ? { r: [70, 72, 70] } : { r: 70 } || { r: 70 }}
             transition={
               isRunning
                 ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" }

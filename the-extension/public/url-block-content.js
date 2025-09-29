@@ -8,6 +8,9 @@
   // Load blocked URLs from storage
   async function loadBlockedUrls() {
     try {
+      if (!chrome.storage || !chrome.storage.sync) {
+        throw new Error("chrome.storage.sync is not available");
+      }
       const result = await chrome.storage.sync.get(["blockedUrls"]);
       blockedUrls = result.blockedUrls || [];
       checkCurrentUrl();

@@ -53,17 +53,10 @@ export const restartTimer = (
 
 export const handleBack = (
   setIsTimerMode,
-  setIsSettingsMode,
-  setIsRunning,
-  setIsBreakMode,
-  setTimeLeft,
-  totalTime
+  setIsSettingsMode
 ) => {
   setIsTimerMode(false);
   setIsSettingsMode(false);
-  setIsRunning(false);
-  setIsBreakMode(false);
-  setTimeLeft(totalTime);
 };
 
 export const handleSettings = (

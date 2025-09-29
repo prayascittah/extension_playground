@@ -13,6 +13,9 @@ class URLBlocker {
 
   async loadBlockedUrls() {
     try {
+      if (!chrome.storage || !chrome.storage.sync) {
+        throw new Error("chrome.storage.sync is not available");
+      }
       const result = await chrome.storage.sync.get(["blockedUrls"]);
       this.blockedUrls = result.blockedUrls || [];
     } catch (error) {

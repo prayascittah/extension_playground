@@ -15,7 +15,7 @@ function BackButton({ onClick, isVisible }) {
         stiffness: 130,
         mass: 1.5,
       }}
-      onClick={onBackClick}
+      onClick={onClick}
       className="p-2 bg-gray-200 hover:bg-gray-30 rounded-lg flex items-center justify-center"
       title="Back to clock"
     >

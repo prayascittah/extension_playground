@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState, useCallback } from "react";
 import { useAppStore } from "./store/appStore";
 import { motion } from "framer-motion";
 import {
@@ -30,8 +30,8 @@ function App() {
   const {
     time,
     setTime,
-    isPinned,
-    setIsPinned,
+    isLockInMode,
+    setIsLockInMode,
     isPinPinned,
     setIsPinPinned,
     isLockHovered,
@@ -55,16 +55,20 @@ function App() {
   const timeoutRef = useRef();
 
   // Check if we should show the back button (any non-clock mode)
-  const showBackButton = isTimerMode || isSettingsMode || isPinned;
+  const showBackButton = isTimerMode || isSettingsMode || isLockInMode;
+
+  const memoizedRestartTimer = useCallback(() => {
+    restartTimer(setIsRunning, isBreakMode, setTimeLeft, settings, totalTime);
+  }, [setIsRunning, isBreakMode, setTimeLeft, settings, totalTime]);
 
   useEffect(() => {
     if (isTimerMode) {
-      restartTimer();
+      memoizedRestartTimer();
     } else {
       cleanupTimer(timeoutRef);
     }
     return () => cleanupTimer(timeoutRef);
-  }, [isTimerMode, restartTimer]);
+  }, [isTimerMode, memoizedRestartTimer]);
 
   useEffect(() => {
     if (isTimerMode && timeLeft === 0 && isRunning === false) {
@@ -123,16 +127,7 @@ function App() {
           onClick={() => handlePin(setIsPinPinned, isPinPinned)}
         />
         <BackButton
-          onClick={() =>
-            handleBack(
-              setIsTimerMode,
-              setIsSettingsMode,
-              setIsRunning,
-              setIsBreakMode,
-              setTimeLeft,
-              totalTime
-            )
-          }
+          onClick={() => handleBack(setIsTimerMode, setIsSettingsMode)}
           isVisible={showBackButton}
         />
       </motion.div>
@@ -204,7 +199,7 @@ function App() {
         className="flex flex-col justify-center gap-2"
       >
         <LockButton
-          isPinned={isPinned}
+          isPinned={isLockInMode}
           isLockHovered={isLockHovered}
           setIsLockHovered={setIsLockHovered}
           onLockClick={handleLock}
