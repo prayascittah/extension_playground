@@ -12,7 +12,18 @@ import { MiddleSection } from "./components/clock";
 import { SettingsPage } from "./components/settings";
 import { PomodoroTimer } from "./components/timer";
 import BreakTimer from "./components/timer/BreakTimer";
-import { useTimerLogic } from "./utils/timerUtils";
+import {
+  handlePin,
+  handleTimer,
+  toggleTimer,
+  restartTimer,
+  handleBack,
+  handleSettings,
+  handleLock,
+  handleSettingsSave,
+  handleSettingsClose,
+  cleanupTimer,
+} from "./utils/utils";
 
 function App() {
   const [isBreakMode, setIsBreakMode] = useState(false);
@@ -40,113 +51,32 @@ function App() {
     completedSessions,
     setCompletedSessions,
   } = useAppStore();
-  const totalTime = settings.pomodoroTime * 60;
+  const totalTime = settings.pomodoroTime; // ms
   const timeoutRef = useRef();
-
-  // Use timer utility logic for both Pomodoro and break
-  const { startTimer, cleanupTimer } = useTimerLogic(
-    isRunning,
-    timeLeft,
-    isBreakMode ? settings.breakTime * 60 : totalTime,
-    setTimeLeft,
-    setIsRunning,
-    isBreakMode,
-    setCompletedSessions
-  );
-
-  const handlePin = () => {
-    setIsPinPinned(!isPinPinned);
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      chrome.tabs.sendMessage(
-        tabs[0].id,
-        { action: "toggleFloatingClock" },
-        (response) => {
-          if (chrome.runtime.lastError) {
-            console.log("Content script not ready, that's okay");
-          }
-        }
-      );
-    });
-  };
-
-  const handleTimer = () => {
-    setIsSettingsMode(false);
-    setIsTimerMode(!isTimerMode);
-    if (!isTimerMode) {
-      setTimeLeft(totalTime);
-      setIsRunning(false);
-      setIsBreakMode(false);
-    }
-  };
-
-  const toggleTimer = () => {
-    setIsRunning(!isRunning);
-  };
-
-  const restartTimer = () => {
-    setIsRunning(false);
-    if (isBreakMode) {
-      setTimeLeft(settings.breakTime * 60);
-    } else {
-      setTimeLeft(totalTime);
-    }
-  };
-
-  const handleBack = () => {
-    setIsTimerMode(false);
-    setIsSettingsMode(false);
-    setIsRunning(false);
-    setIsBreakMode(false);
-    setTimeLeft(totalTime);
-  };
-
-  const handleSettings = () => {
-    setIsTimerMode(false);
-    setIsSettingsMode(!isSettingsMode);
-  };
-
-  const handleLock = () => {
-    // Open URL management page
-    chrome.tabs.create({
-      url: chrome.runtime.getURL("url-blocker.html"),
-    });
-  };
-
-  const handleSettingsSave = (newSettings) => {
-    setSettings(newSettings);
-    const newTotalTime = newSettings.pomodoroTime * 60;
-    setTimeLeft(newTotalTime);
-    setIsSettingsMode(false);
-    setIsTimerMode(true);
-  };
-
-  const handleSettingsClose = () => {
-    setIsSettingsMode(false);
-  };
 
   // Check if we should show the back button (any non-clock mode)
   const showBackButton = isTimerMode || isSettingsMode || isPinned;
 
   useEffect(() => {
     if (isTimerMode) {
-      startTimer();
+      restartTimer();
     } else {
-      cleanupTimer();
+      cleanupTimer(timeoutRef);
     }
-    return cleanupTimer;
-  }, [isTimerMode, startTimer, cleanupTimer]);
+    return () => cleanupTimer(timeoutRef);
+  }, [isTimerMode, restartTimer]);
 
   useEffect(() => {
     if (isTimerMode && timeLeft === 0 && isRunning === false) {
       if (!isBreakMode) {
         // Pomodoro session completed, start break
         setIsBreakMode(true);
-        setTimeLeft(settings.breakTime * 60);
+        setTimeLeft(settings.breakTime);
         setIsRunning(false); // Don't auto-start break
       } else {
         // Break completed, start next Pomodoro
         setIsBreakMode(false);
-        setTimeLeft(settings.pomodoroTime * 60);
+        setTimeLeft(settings.pomodoroTime);
         setIsRunning(false); // Don't auto-start next session
         setCompletedSessions((prev) => prev + 1);
       }
@@ -188,25 +118,56 @@ function App() {
         }}
         className="flex flex-col items-center"
       >
-        <PinButton isPinPinned={isPinPinned} onPinClick={handlePin} />
-        <BackButton onBackClick={handleBack} isVisible={showBackButton} />
+        <PinButton
+          isPinPinned={isPinPinned}
+          onClick={() => handlePin(setIsPinPinned, isPinPinned)}
+        />
+        <BackButton
+          onClick={() =>
+            handleBack(
+              setIsTimerMode,
+              setIsSettingsMode,
+              setIsRunning,
+              setIsBreakMode,
+              setTimeLeft,
+              totalTime
+            )
+          }
+          isVisible={showBackButton}
+        />
       </motion.div>
 
       {/* Middle section - Clock display, Pomodoro Timer, or Settings */}
       {isSettingsMode ? (
         <SettingsPage
           currentSettings={settings}
-          onSave={handleSettingsSave}
-          onClose={handleSettingsClose}
+          onSave={(newSettings) =>
+            handleSettingsSave(
+              setSettings,
+              newSettings,
+              setTimeLeft,
+              setIsSettingsMode,
+              setIsTimerMode
+            )
+          }
+          onClose={() => handleSettingsClose(setIsSettingsMode)}
         />
       ) : isTimerMode ? (
         isBreakMode ? (
           <BreakTimer
             timeLeft={timeLeft}
-            totalTime={settings.breakTime * 60}
+            totalTime={settings.breakTime}
             isRunning={isRunning}
-            onToggleTimer={toggleTimer}
-            onRestartTimer={restartTimer}
+            onToggleTimer={() => toggleTimer(setIsRunning, isRunning)}
+            onRestartTimer={() =>
+              restartTimer(
+                setIsRunning,
+                isBreakMode,
+                setTimeLeft,
+                settings,
+                totalTime
+              )
+            }
           />
         ) : (
           <PomodoroTimer
@@ -214,8 +175,16 @@ function App() {
             totalTime={totalTime}
             completedSessions={completedSessions}
             isRunning={isRunning}
-            onToggleTimer={toggleTimer}
-            onRestartTimer={restartTimer}
+            onToggleTimer={() => toggleTimer(setIsRunning, isRunning)}
+            onRestartTimer={() =>
+              restartTimer(
+                setIsRunning,
+                isBreakMode,
+                setTimeLeft,
+                settings,
+                totalTime
+              )
+            }
           />
         )
       ) : (
@@ -242,11 +211,23 @@ function App() {
         />
         <TimerButton
           setIsTimerHovered={setIsTimerHovered}
-          onTimerClick={handleTimer}
+          onTimerClick={() =>
+            handleTimer(
+              setIsSettingsMode,
+              setIsTimerMode,
+              isTimerMode,
+              setTimeLeft,
+              totalTime,
+              setIsRunning,
+              setIsBreakMode
+            )
+          }
           isTimerMode={isTimerMode}
         />
         <SettingsButton
-          onSettingsClick={handleSettings}
+          onSettingsClick={() =>
+            handleSettings(setIsTimerMode, setIsSettingsMode, isSettingsMode)
+          }
           isSettingsMode={isSettingsMode}
         />
       </motion.div>

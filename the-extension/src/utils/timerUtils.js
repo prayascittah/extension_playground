@@ -1,4 +1,5 @@
 // Timer utility functions
+import { useEffect, useRef, useCallback } from "react";
 
 export const useTimerLogic = (
   isRunning,
@@ -9,32 +10,72 @@ export const useTimerLogic = (
   isBreakMode,
   setCompletedSessions
 ) => {
-  const timerRef = { current: null };
+  const timerRef = useRef(null);
   const interval = 1000; // ms
 
-  const startTimer = () => {
-    if (isRunning && timeLeft > 0) {
-      timerRef.current = setTimeout(() => {
-        setTimeLeft(Math.max(0, timeLeft - interval));
-      }, interval);
-    } else if (timeLeft === 0) {
-      setIsRunning(false);
-      setTimeLeft(totalTime);
+  // Manage ticking when isRunning is true. Use a single interval and
+  // update state with a functional setState to avoid stale closures.
+  useEffect(() => {
+    // If not running, ensure any existing timer is cleared.
+    if (!isRunning) {
+      if (timerRef.current) {
+        console.log("Timer stopped: clearing interval.");
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+      return;
     }
-  };
+    console.log("Timer started: creating interval.");
+    // Start the interval loop. This effect does NOT depend on `timeLeft`
+    // so it won't recreate the interval every tick. The setter callback
+    // uses the previous value to compute the next value.
+    timerRef.current = setInterval(() => {
+      setTimeLeft((prev) => {
+        console.log("Timer tick: previous timeLeft:", prev);
+        if (prev <= 0) {
+          console.log("Timer reached zero: stopping.");
+          if (timerRef.current) {
+            clearInterval(timerRef.current);
+            timerRef.current = null;
+          }
+          setIsRunning(false);
+          return 0;
+        }
+        const next = Math.max(0, prev - interval);
+        console.log("Timer tick: next timeLeft:", next);
+        return next;
+      });
+    }, interval);
 
-  const cleanupTimer = () => {
+    return () => {
+      if (timerRef.current) {
+        console.log("Effect cleanup: clearing interval.");
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+    // Only restart when `isRunning` changes or when the setters change.
+  }, [isRunning, setTimeLeft, setIsRunning]);
+
+  const startTimer = useCallback(() => {
+    // kept for API compatibility; starting is controlled externally by
+    // setting `isRunning` in the store. This function is stable so
+    // consumers can include it in deps without causing effect churn.
+  }, []);
+
+  const cleanupTimer = useCallback(() => {
     if (timerRef.current) {
-      clearTimeout(timerRef.current);
+      clearInterval(timerRef.current);
+      timerRef.current = null;
     }
-  };
+  }, []);
 
   return { startTimer, cleanupTimer };
 };
 
-export const formatTime = (timeInSeconds) => {
+export const formatTime = (timeInMs) => {
   // Accept ms, convert to seconds
-  const totalSeconds = Math.ceil(timeInSeconds / 1000);
+  const totalSeconds = Math.ceil(timeInMs / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
   return `${minutes.toString().padStart(2, "0")}:${seconds

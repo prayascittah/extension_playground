@@ -3,18 +3,12 @@
   "version": "0.0.1",
   "manifest_version": 3,
   "description": "The Clocks ticking dont get distracted",
-  "permissions": ["tabs", "windows", "activeTab", "storage"],
+  "permissions": ["tabs", "windows", "activeTab"],
   "content_scripts": [
     {
       "matches": ["<all_urls>"],
-      "js": ["content.js", "url-block-content.js"],
+      "js": ["content.js"],
       "css": ["content.css"]
-    }
-  ],
-  "web_accessible_resources": [
-    {
-      "resources": ["url-blocker.html", "url-blocker.js", "url-blocker.css"],
-      "matches": ["<all_urls>"]
     }
   ],
   "action": {

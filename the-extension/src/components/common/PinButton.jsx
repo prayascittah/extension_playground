@@ -1,11 +1,11 @@
 import { Pin } from "lucide-react";
 import { motion } from "framer-motion";
 
-function PinButton({ isPinPinned, onPinClick }) {
+function PinButton({ isPinPinned, onClick }) {
   return (
     <div className="flex justify-start items-start">
       <motion.button
-        onClick={onPinClick}
+        onClick={onClick}
         className="p-2 rotate-35"
         title={isPinPinned ? "Unpin floating clock" : "Pin floating clock"}
         whileHover={{ y: -3, scale: 1.2 }}
