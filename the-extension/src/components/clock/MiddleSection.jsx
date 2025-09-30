@@ -9,7 +9,6 @@ function MiddleSection({ time }) {
       <div className="flex flex-col items-center">
         <ClockDisplay time={time} />
       </div>
-
       <Signature />
     </div>
   );

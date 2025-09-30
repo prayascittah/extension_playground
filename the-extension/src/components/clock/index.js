@@ -5,3 +5,6 @@ export { default as MiddleSection } from "./MiddleSection";
 export { default as SecondsBox } from "./SecondsBox";
 export { default as Signature } from "./Signature";
 export { default as TimeBox } from "./TimeBox";
+
+// helps to import like
+// import { ClockDisplay, DateHeader, MiddleSection } from './components/clock';
