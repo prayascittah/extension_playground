@@ -29,7 +29,9 @@ function SettingsPage() {
       >
         Save
       </button>
-      <button onClick={() => handleSettingsClose(setIsSettingsMode)}>
+      <button
+        onClick={() => handleSettingsClose(setIsSettingsMode, setIsTimerMode)}
+      >
         Close
       </button>
     </div>

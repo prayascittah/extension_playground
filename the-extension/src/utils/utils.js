@@ -51,10 +51,7 @@ export const restartTimer = (
   }
 };
 
-export const handleBack = (
-  setIsTimerMode,
-  setIsSettingsMode
-) => {
+export const handleBack = (setIsTimerMode, setIsSettingsMode) => {
   setIsTimerMode(false);
   setIsSettingsMode(false);
 };
@@ -88,8 +85,9 @@ export const handleSettingsSave = (
   setIsTimerMode(true);
 };
 
-export const handleSettingsClose = (setIsSettingsMode) => {
+export const handleSettingsClose = (setIsSettingsMode, setIsTimerMode) => {
   setIsSettingsMode(false);
+  setIsTimerMode(true);
 };
 
 export const cleanupTimer = (timeoutRef) => {

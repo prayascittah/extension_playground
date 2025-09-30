@@ -11,15 +11,20 @@ function PomodoroTimer() {
     isRunning,
     setIsRunning,
     setTimeLeft,
-    isBreakMode,
   } = useAppStore();
   const radius = 75;
+
+  // Ensure timeLeft and settings.pomodoroTime are always valid numbers
+  const safeTimeLeft =
+    typeof timeLeft === "number" ? timeLeft : settings.pomodoroTime;
+  const safePomodoroTime =
+    typeof settings.pomodoroTime === "number" ? settings.pomodoroTime : 60000;
   const { strokeDasharray, strokeDashoffset } = calculateProgress(
-    timeLeft,
-    settings.pomodoroTime,
+    safeTimeLeft,
+    safePomodoroTime,
     radius
   );
-  const displayTime = formatTime(timeLeft);
+  const displayTime = formatTime(safeTimeLeft);
 
   const handlePlayPause = (e) => {
     e.stopPropagation();
@@ -80,7 +85,7 @@ function PomodoroTimer() {
           <motion.circle
             cx="85"
             cy="85"
-            r="70"
+            r={70}
             stroke="#e5e7eb"
             strokeWidth="8"
             fill="transparent"
@@ -95,7 +100,7 @@ function PomodoroTimer() {
           <motion.circle
             cx="85"
             cy="85"
-            r="70"
+            r={70}
             stroke="#000000"
             strokeWidth="8"
             fill="transparent"

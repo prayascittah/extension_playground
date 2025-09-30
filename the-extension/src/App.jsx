@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState, useCallback } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useAppStore } from "./store/appStore";
 import { motion } from "framer-motion";
 import {
@@ -12,34 +12,15 @@ import { MiddleSection } from "./components/clock";
 import { SettingsPage } from "./components/settings";
 import { PomodoroTimer } from "./components/timer";
 import BreakTimer from "./components/timer/BreakTimer";
-import {
-  handlePin,
-  handleTimer,
-  handleBack,
-  handleSettings,
-  handleLock,
-  handleSettingsSave,
-  handleSettingsClose,
-  cleanupTimer,
-} from "./utils/utils";
+import { handleSessionTransition, useLiveClock } from "./utils/clockUtils";
 
 function App() {
   const [isBreakMode, setIsBreakMode] = useState(false);
   const {
-    time,
     setTime,
-    isLockInMode,
-    isPinPinned,
-    setIsPinPinned,
-    isLockHovered,
-    setIsLockHovered,
-    setIsTimerHovered,
     isSettingsMode,
-    setIsSettingsMode,
     settings,
-    setSettings,
     isTimerMode,
-    setIsTimerMode,
     timeLeft,
     setTimeLeft,
     isRunning,
@@ -48,23 +29,9 @@ function App() {
   } = useAppStore();
   const timeoutRef = useRef();
 
-  // Show back button in any non-clock mode
-  const showBackButton = isTimerMode || isSettingsMode || isLockInMode;
-
   // Timer session transitions
   useEffect(() => {
-    if (isTimerMode && timeLeft === 0 && !isRunning) {
-      if (!isBreakMode) {
-        setIsBreakMode(true);
-        setTimeLeft(settings.breakTime);
-        setIsRunning(false);
-      } else {
-        setIsBreakMode(false);
-        setTimeLeft(settings.pomodoroTime);
-        setIsRunning(false);
-        setCompletedSessions((prev) => prev + 1);
-      }
-    }
+    handleSessionTransition();
   }, [
     timeLeft,
     isTimerMode,
@@ -77,16 +44,7 @@ function App() {
     setIsRunning,
   ]);
 
-  // Live clock
-  useEffect(() => {
-    const getTime = () => {
-      const now = new Date();
-      setTime(now);
-      timeoutRef.current = setTimeout(getTime, 1000 - now.getMilliseconds());
-    };
-    getTime();
-    return () => clearTimeout(timeoutRef.current);
-  }, [setTime]);
+  useEffect(useLiveClock(timeoutRef), [setTime]);
 
   return (
     <div className="w-110 h-60 bg-gray-100 flex p-2">
