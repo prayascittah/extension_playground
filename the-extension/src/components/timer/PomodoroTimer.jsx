@@ -1,17 +1,12 @@
 import { motion } from "framer-motion";
-import { Play, Pause, Square } from "lucide-react";
 import { formatTime, calculateProgress } from "../../utils/timerUtils";
 import { useAppStore } from "../../store/appStore";
+import PomodoroTimerCircle from "./PomodoroTimerCircle";
+import PomodoroTimerDisplay from "./PomodoroTimerDisplay";
+import PomodoroTimerControls from "./PomodoroTimerControls";
 
 function PomodoroTimer() {
-  const {
-    timeLeft,
-    settings,
-    completedSessions,
-    isRunning,
-    setIsRunning,
-    setTimeLeft,
-  } = useAppStore();
+  const { timeLeft, settings, completedSessions, isRunning } = useAppStore();
   const radius = 75;
 
   // Ensure timeLeft and settings.pomodoroTime are always valid numbers
@@ -25,17 +20,6 @@ function PomodoroTimer() {
     radius
   );
   const displayTime = formatTime(safeTimeLeft);
-
-  const handlePlayPause = (e) => {
-    e.stopPropagation();
-    setIsRunning(!isRunning);
-  };
-
-  const handleStop = (e) => {
-    e.stopPropagation();
-    setIsRunning(false);
-    setTimeLeft(settings.pomodoroTime);
-  };
 
   return (
     <div className="flex-1 flex items-center justify-start gap-10">
@@ -70,80 +54,15 @@ function PomodoroTimer() {
           duration: 0.8,
         }}
       >
-        {/* Background circle with heartbeat animation */}
-        <motion.svg
-          width="170"
-          height="170"
-          className="transform -rotate-90"
-          animate={isRunning ? { scale: [1, 1.05, 1] } : { scale: 1 }}
-          transition={
-            isRunning
-              ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
-              : {}
-          }
-        >
-          <motion.circle
-            cx="85"
-            cy="85"
-            r={70}
-            stroke="#e5e7eb"
-            strokeWidth="8"
-            fill="transparent"
-            animate={isRunning ? { r: [70, 72, 70] } : { r: 70 }}
-            transition={
-              isRunning
-                ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
-                : {}
-            }
-          />
-          {/* Progress circle with heartbeat animation */}
-          <motion.circle
-            cx="85"
-            cy="85"
-            r={70}
-            stroke="#000000"
-            strokeWidth="8"
-            fill="transparent"
-            strokeDasharray={strokeDasharray}
-            strokeDashoffset={strokeDashoffset}
-            strokeLinecap="round"
-            className="transition-none"
-            style={{}}
-            animate={isRunning ? { r: [70, 72, 70] } : { r: 70 }}
-            transition={
-              isRunning
-                ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" }
-                : { duration: 0 }
-            }
-          />
-        </motion.svg>
-
-        {/* Timer display and controls - NO beating animation */}
+        <PomodoroTimerCircle
+          isRunning={isRunning}
+          strokeDasharray={strokeDasharray}
+          strokeDashoffset={strokeDashoffset}
+        />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <div className="text-2xl font-medium text-black mb-2 tracking-wider">
-            {displayTime}
-          </div>
-
+          <PomodoroTimerDisplay displayTime={displayTime} />
           {/* Control buttons */}
-          <div className="flex items-center gap-2">
-            <button
-              onClick={handlePlayPause}
-              className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors w-8 h-8 flex items-center justify-center"
-            >
-              {isRunning ? (
-                <Pause size={16} className="text-black" />
-              ) : (
-                <Play size={16} className="text-black" />
-              )}
-            </button>
-
-            <button
-              onClick={handleStop}
-              className="p-2 bg-gray-200 hover:bg-gray-300 rounded-md transition-colors w-8 h-8 flex items-center justify-center"
-            >
-              <Square size={16} className="text-black" />
-            </button>
-          </div>
+          <PomodoroTimerControls />
         </div>
       </motion.div>
     </div>
