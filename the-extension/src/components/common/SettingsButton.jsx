@@ -1,9 +1,14 @@
 import { Settings } from "lucide-react";
+import { useAppStore } from "../../store/appStore";
+import { handleSettings } from "../../utils/utils";
 
-function SettingsButton({ onSettingsClick, isSettingsMode }) {
+function SettingsButton() {
+  const { isSettingsMode, setIsTimerMode, setIsSettingsMode } = useAppStore();
   return (
     <button
-      onClick={onSettingsClick}
+      onClick={() =>
+        handleSettings(setIsTimerMode, setIsSettingsMode, isSettingsMode)
+      }
       className={`p-2 rounded-lg transition-colors ${
         isSettingsMode
           ? "bg-black text-white"

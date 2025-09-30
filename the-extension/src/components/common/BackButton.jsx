@@ -1,7 +1,17 @@
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
+import { useAppStore } from "../../store/appStore";
+import { handleBack } from "../../utils/utils";
 
-function BackButton({ onClick, isVisible }) {
+function BackButton() {
+  const {
+    isTimerMode,
+    isSettingsMode,
+    isLockInMode,
+    setIsTimerMode,
+    setIsSettingsMode,
+  } = useAppStore();
+  const isVisible = isTimerMode || isSettingsMode || isLockInMode;
   if (!isVisible) return null;
 
   return (
@@ -15,7 +25,7 @@ function BackButton({ onClick, isVisible }) {
         stiffness: 130,
         mass: 1.5,
       }}
-      onClick={onClick}
+      onClick={() => handleBack(setIsTimerMode, setIsSettingsMode)}
       className="p-2 bg-gray-200 hover:bg-gray-30 rounded-lg flex items-center justify-center"
       title="Back to clock"
     >

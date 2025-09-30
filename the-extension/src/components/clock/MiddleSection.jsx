@@ -1,8 +1,10 @@
 import DateHeader from "./DateHeader";
 import ClockDisplay from "./ClockDisplay";
 import Signature from "./Signature";
+import { useAppStore } from "../../store/appStore";
 
-function MiddleSection({ time }) {
+function MiddleSection() {
+  const { time } = useAppStore();
   return (
     <div className="flex-1 flex flex-col justify-between items-center">
       <DateHeader time={time} />
