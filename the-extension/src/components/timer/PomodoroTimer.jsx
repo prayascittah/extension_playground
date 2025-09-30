@@ -1,32 +1,35 @@
 import { motion } from "framer-motion";
 import { Play, Pause, Square } from "lucide-react";
 import { formatTime, calculateProgress } from "../../utils/timerUtils";
+import { useAppStore } from "../../store/appStore";
 
-function PomodoroTimer({
-  timeLeft,
-  totalTime,
-  completedSessions,
-  isRunning,
-  onToggleTimer,
-  onRestartTimer,
-}) {
+function PomodoroTimer() {
+  const {
+    timeLeft,
+    settings,
+    completedSessions,
+    isRunning,
+    setIsRunning,
+    setTimeLeft,
+    isBreakMode,
+  } = useAppStore();
   const radius = 75;
-  const timerTickInterval = 1000; // ms, matches setTimeout in timerUtils
   const { strokeDasharray, strokeDashoffset } = calculateProgress(
     timeLeft,
-    totalTime,
+    settings.pomodoroTime,
     radius
   );
   const displayTime = formatTime(timeLeft);
 
   const handlePlayPause = (e) => {
     e.stopPropagation();
-    onToggleTimer();
+    setIsRunning(!isRunning);
   };
 
   const handleStop = (e) => {
     e.stopPropagation();
-    onRestartTimer();
+    setIsRunning(false);
+    setTimeLeft(settings.pomodoroTime);
   };
 
   return (

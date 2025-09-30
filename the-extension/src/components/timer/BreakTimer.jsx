@@ -1,30 +1,28 @@
 import { motion } from "framer-motion";
 import { Play, Pause, Square } from "lucide-react";
 import { formatTime, calculateProgress } from "../../utils/timerUtils";
+import { useAppStore } from "../../store/appStore";
 
-function BreakTimer({
-  timeLeft,
-  totalTime,
-  isRunning,
-  onToggleTimer,
-  onRestartTimer,
-}) {
+function BreakTimer() {
+  const { timeLeft, settings, isRunning, setIsRunning, setTimeLeft } =
+    useAppStore();
   const radius = 75;
-  const timerTickInterval = 1000; // ms, matches setTimeout in timerUtils
+  const timerTickInterval = 1000; // ms
   const { strokeDasharray, strokeDashoffset } =
-    timeLeft && totalTime
-      ? calculateProgress(timeLeft, totalTime, radius)
+    timeLeft && settings.breakTime
+      ? calculateProgress(timeLeft, settings.breakTime, radius)
       : { strokeDasharray: 0, strokeDashoffset: 0 };
   const displayTime = formatTime(timeLeft);
 
   const handlePlayPause = (e) => {
     e.stopPropagation();
-    onToggleTimer();
+    setIsRunning(!isRunning);
   };
 
   const handleStop = (e) => {
     e.stopPropagation();
-    onRestartTimer();
+    setIsRunning(false);
+    setTimeLeft(settings.breakTime);
   };
 
   return (

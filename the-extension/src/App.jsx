@@ -51,15 +51,20 @@ function App() {
     completedSessions,
     setCompletedSessions,
   } = useAppStore();
-  const totalTime = settings.pomodoroTime; // ms
   const timeoutRef = useRef();
 
   // Check if we should show the back button (any non-clock mode)
   const showBackButton = isTimerMode || isSettingsMode || isLockInMode;
 
   const memoizedRestartTimer = useCallback(() => {
-    restartTimer(setIsRunning, isBreakMode, setTimeLeft, settings, totalTime);
-  }, [setIsRunning, isBreakMode, setTimeLeft, settings, totalTime]);
+    restartTimer(
+      setIsRunning,
+      isBreakMode,
+      setTimeLeft,
+      settings,
+      settings.pomodoroTime
+    );
+  }, [setIsRunning, isBreakMode, setTimeLeft, settings]);
 
   useEffect(() => {
     if (isTimerMode) {
@@ -160,14 +165,14 @@ function App() {
                 isBreakMode,
                 setTimeLeft,
                 settings,
-                totalTime
+                settings.pomodoroTime
               )
             }
           />
         ) : (
           <PomodoroTimer
             timeLeft={timeLeft}
-            totalTime={totalTime}
+            totalTime={settings.pomodoroTime}
             completedSessions={completedSessions}
             isRunning={isRunning}
             onToggleTimer={() => toggleTimer(setIsRunning, isRunning)}
@@ -177,7 +182,7 @@ function App() {
                 isBreakMode,
                 setTimeLeft,
                 settings,
-                totalTime
+                settings.pomodoroTime
               )
             }
           />
@@ -212,7 +217,7 @@ function App() {
               setIsTimerMode,
               isTimerMode,
               setTimeLeft,
-              totalTime,
+              settings.pomodoroTime,
               setIsRunning,
               setIsBreakMode
             )
