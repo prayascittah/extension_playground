@@ -12,14 +12,14 @@ function BreakTimer() {
     isRunning,
     setIsRunning,
     setTimeLeft,
+    isBreakMode,
     setIsBreakMode,
   } = useAppStore();
   const timerRef = useRef(null);
 
-  // Timer countdown effect
+  // Automatic timer start when in break mode
   useEffect(() => {
-    console.log(isRunning, timeLeft);
-    if (isRunning && timeLeft > 0) {
+    if (isBreakMode && timeLeft > 0) {
       timerRef.current = setInterval(() => {
         const newTime = Math.max(0, timeLeft - 1000);
         console.log("Break timer tick:", newTime);
@@ -48,7 +48,7 @@ function BreakTimer() {
       }
     };
   }, [
-    isRunning,
+    isBreakMode,
     timeLeft,
     settings.pomodoroTime,
     setTimeLeft,
