@@ -22,7 +22,6 @@ function BreakTimer() {
     if (isBreakMode && timeLeft > 0) {
       timerRef.current = setInterval(() => {
         const newTime = Math.max(0, timeLeft - 1000);
-        console.log("Break timer tick:", newTime);
 
         // Handle timer completion
         if (newTime === 0) {

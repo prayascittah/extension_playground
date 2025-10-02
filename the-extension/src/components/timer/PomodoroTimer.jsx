@@ -22,7 +22,6 @@ function PomodoroTimer() {
 
   // Timer countdown effect
   useEffect(() => {
-    console.log(isRunning, timeLeft);
     if (isRunning && timeLeft > 0) {
       timerRef.current = setInterval(() => {
         const newTime = Math.max(0, timeLeft - 1000);
@@ -30,11 +29,18 @@ function PomodoroTimer() {
           setIsRunning(false);
           setIsBreakMode(true);
           setTimeLeft(settings.breakTime);
+          setCompletedSessions((prev) => prev + 1);
         } else {
           setTimeLeft(newTime);
         }
       }, 1000);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
     }
+
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
