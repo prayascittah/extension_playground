@@ -1,4 +1,4 @@
-import { useAppStore } from "../store/appStore";
+import { useAppStore } from "../store/appStore.ts";
 
 export function useLiveClock(timeoutRef) {
   const { setTime } = useAppStore();

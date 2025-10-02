@@ -1,11 +1,16 @@
 import { motion } from "framer-motion";
+import { calculateProgress } from "../../utils/timerUtils";
+import { useAppStore } from "../../store/appStore.ts";
 
-function PomodoroTimerCircle({
-  isRunning,
-  strokeDasharray = 0,
-  strokeDashoffset = 0,
-}) {
+function PomodoroTimerCircle() {
+  const { timeLeft, settings } = useAppStore();
   const radius = 70;
+  const { strokeDasharray, strokeDashoffset } = calculateProgress(
+    timeLeft,
+    settings.pomodoroTime,
+    radius
+  );
+  const { isRunning } = useAppStore();
 
   return (
     <motion.svg

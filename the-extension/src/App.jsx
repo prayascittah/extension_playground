@@ -1,5 +1,5 @@
 import { useEffect, useRef } from "react";
-import { useAppStore } from "./store/appStore";
+import { useAppStore } from "./store/appStore.ts";
 import { motion } from "framer-motion";
 import {
   PinButton,

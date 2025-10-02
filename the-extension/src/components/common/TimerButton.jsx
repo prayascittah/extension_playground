@@ -1,5 +1,5 @@
 import { Timer } from "lucide-react";
-import { useAppStore } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore.ts";
 import { handleTimer } from "../../utils/utils";
 
 function TimerButton() {

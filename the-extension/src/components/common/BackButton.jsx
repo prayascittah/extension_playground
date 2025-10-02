@@ -1,6 +1,6 @@
 import { motion } from "framer-motion";
 import { ArrowLeft } from "lucide-react";
-import { useAppStore } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore.ts";
 import { handleBack } from "../../utils/utils";
 
 function BackButton() {

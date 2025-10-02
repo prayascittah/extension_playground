@@ -1,4 +1,4 @@
-import { useAppStore } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore.ts";
 import { motion } from "framer-motion";
 import TimerSetting from "./TimerSetting";
 import ThemeSettings from "./ThemeSettings";

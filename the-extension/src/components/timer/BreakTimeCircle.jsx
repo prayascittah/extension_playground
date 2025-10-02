@@ -1,11 +1,16 @@
 import { motion } from "framer-motion";
+import { useAppStore } from "../../store/appStore.ts";
+import { calculateProgress } from "../../utils/timerUtils";
 
-function BreakTimeCircle({
-  isRunning,
-  strokeDasharray = 0,
-  strokeDashoffset = 0,
-}) {
+function BreakTimeCircle() {
+  const { timeLeft, settings, isRunning } = useAppStore();
   const radius = 70;
+
+  const { progress, strokeDasharray, strokeDashoffset } = calculateProgress(
+    timeLeft,
+    settings.breakTime,
+    radius
+  );
 
   return (
     <motion.svg

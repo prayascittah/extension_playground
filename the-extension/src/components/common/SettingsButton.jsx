@@ -1,5 +1,5 @@
 import { Settings } from "lucide-react";
-import { useAppStore } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore.ts";
 import { handleSettings } from "../../utils/utils";
 
 function SettingsButton() {

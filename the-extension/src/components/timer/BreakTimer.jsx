@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { formatTime, calculateProgress } from "../../utils/timerUtils";
-import { useAppStore } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore.ts";
 import BreakTimeCircle from "./BreakTimeCircle";
 import BreakTimerDisplay from "./BreakTimerDisplay";
 import BreakTimerControls from "./BreakTimerControls";
@@ -13,42 +12,27 @@ function BreakTimer() {
     isRunning,
     setIsRunning,
     setTimeLeft,
-    isBreakMode,
     setIsBreakMode,
   } = useAppStore();
-
-  const radius = 70;
   const timerRef = useRef(null);
-
-  // Initialize timeLeft if it's invalid
-  useEffect(() => {
-    if (timeLeft == null || isNaN(timeLeft) || timeLeft < 0) {
-      console.log(
-        "Initializing break timeLeft to breakTime:",
-        settings.breakTime
-      );
-      setTimeLeft(settings.breakTime);
-    }
-  }, [timeLeft, settings.breakTime, setTimeLeft]);
 
   // Timer countdown effect
   useEffect(() => {
+    console.log(isRunning, timeLeft);
     if (isRunning && timeLeft > 0) {
       timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          const newTime = Math.max(0, prev - 1000);
-          console.log("Break timer tick:", newTime);
+        const newTime = Math.max(0, timeLeft - 1000);
+        console.log("Break timer tick:", newTime);
 
-          // Handle timer completion
-          if (newTime === 0) {
-            setIsRunning(false);
-            // Break completed, back to pomodoro
-            setIsBreakMode(false);
-            setTimeLeft(settings.pomodoroTime);
-          }
-
-          return newTime;
-        });
+        // Handle timer completion
+        if (newTime === 0) {
+          setIsRunning(false);
+          // Break completed, back to pomodoro
+          setIsBreakMode(false);
+          setTimeLeft(settings.pomodoroTime);
+        } else {
+          setTimeLeft(newTime); // Update timeLeft
+        }
       }, 1000);
     } else {
       if (timerRef.current) {
@@ -71,23 +55,6 @@ function BreakTimer() {
     setIsRunning,
     setIsBreakMode,
   ]);
-
-  const { strokeDasharray, strokeDashoffset } = calculateProgress(
-    timeLeft,
-    settings.breakTime,
-    radius
-  );
-  const displayTime = formatTime(timeLeft);
-
-  // Debug logging
-  console.log(
-    "BreakTimer - timeLeft:",
-    timeLeft,
-    "settings.breakTime:",
-    settings.breakTime,
-    "displayTime:",
-    displayTime
-  );
 
   return (
     <div className="flex-1 flex items-center justify-start gap-10">
@@ -119,13 +86,9 @@ function BreakTimer() {
           duration: 0.8,
         }}
       >
-        <BreakTimeCircle
-          isRunning={isRunning}
-          strokeDasharray={strokeDasharray}
-          strokeDashoffset={strokeDashoffset}
-        />
+        <BreakTimeCircle />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <BreakTimerDisplay displayTime={displayTime} />
+          <BreakTimerDisplay />
           <BreakTimerControls />
         </div>
       </motion.div>

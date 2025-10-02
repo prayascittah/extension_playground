@@ -1,7 +1,6 @@
 import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { formatTime, calculateProgress } from "../../utils/timerUtils";
-import { useAppStore } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore.ts";
 import PomodoroTimerCircle from "./PomodoroTimerCircle";
 import PomodoroTimerDisplay from "./PomodoroTimerDisplay";
 import PomodoroTimerControls from "./PomodoroTimerControls";
@@ -19,55 +18,23 @@ function PomodoroTimer() {
     setCompletedSessions,
   } = useAppStore();
 
-  const radius = 70;
   const timerRef = useRef(null);
-
-  // Initialize timeLeft if it's invalid
-  useEffect(() => {
-    if (timeLeft == null || isNaN(timeLeft) || timeLeft < 0) {
-      console.log(
-        "Initializing timeLeft to pomodoroTime:",
-        settings.pomodoroTime
-      );
-      setTimeLeft(settings.pomodoroTime);
-    }
-  }, [timeLeft, settings.pomodoroTime, setTimeLeft]);
 
   // Timer countdown effect
   useEffect(() => {
+    console.log(isRunning, timeLeft);
     if (isRunning && timeLeft > 0) {
       timerRef.current = setInterval(() => {
-        setTimeLeft((prev) => {
-          const newTime = Math.max(0, prev - 1000);
-          console.log("Timer tick:", newTime);
-
-          // Handle timer completion
-          if (newTime === 0) {
-            setIsRunning(false);
-
-            // Transition between pomodoro and break
-            if (!isBreakMode) {
-              // Completed a pomodoro session, start break
-              setIsBreakMode(true);
-              setTimeLeft(settings.breakTime);
-              setCompletedSessions((prev) => prev + 1);
-            } else {
-              // Completed break, back to pomodoro
-              setIsBreakMode(false);
-              setTimeLeft(settings.pomodoroTime);
-            }
-          }
-
-          return newTime;
-        });
+        const newTime = Math.max(0, timeLeft - 1000);
+        if (newTime === 0) {
+          setIsRunning(false);
+          setIsBreakMode(true);
+          setTimeLeft(settings.breakTime);
+        } else {
+          setTimeLeft(newTime);
+        }
       }, 1000);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
     }
-
     return () => {
       if (timerRef.current) {
         clearInterval(timerRef.current);
@@ -85,24 +52,6 @@ function PomodoroTimer() {
     setIsBreakMode,
     setCompletedSessions,
   ]);
-
-  const { strokeDasharray, strokeDashoffset } = calculateProgress(
-    timeLeft,
-    settings.pomodoroTime,
-    radius
-  );
-  const displayTime = formatTime(timeLeft);
-
-  // Debug logging
-  console.log(
-    "PomodoroTimer - timeLeft:",
-    timeLeft,
-    "settings.pomodoroTime:",
-    settings.pomodoroTime,
-    "displayTime:",
-    displayTime
-  );
-
   return (
     <div className="flex-1 flex items-center justify-start gap-10">
       {/* Session counter on the left - slides in from left */}
@@ -136,14 +85,9 @@ function PomodoroTimer() {
           duration: 0.8,
         }}
       >
-        <PomodoroTimerCircle
-          isRunning={isRunning}
-          strokeDasharray={strokeDasharray}
-          strokeDashoffset={strokeDashoffset}
-        />
+        <PomodoroTimerCircle />
         <div className="absolute inset-0 flex flex-col items-center justify-center">
-          <PomodoroTimerDisplay displayTime={displayTime} />
-          {/* Control buttons */}
+          <PomodoroTimerDisplay />
           <PomodoroTimerControls />
         </div>
       </motion.div>

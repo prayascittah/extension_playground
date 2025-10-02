@@ -1,6 +1,6 @@
 import { Pin } from "lucide-react";
 import { motion } from "framer-motion";
-import { useAppStore } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore.ts";
 import { handlePin } from "../../utils/utils";
 
 function PinButton() {

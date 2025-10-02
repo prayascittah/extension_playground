@@ -1,10 +1,11 @@
 import { Play, Pause, Square } from "lucide-react";
-import { useAppStore } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore.ts";
 
 function PomodoroTimerControls() {
   const { isRunning, setIsRunning, setTimeLeft, settings } = useAppStore();
 
   const handlePlayPause = (e) => {
+    // Prevent event bubbling if this component is nested
     e.stopPropagation();
     setIsRunning(!isRunning);
   };

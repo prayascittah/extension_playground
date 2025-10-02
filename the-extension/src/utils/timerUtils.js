@@ -11,21 +11,7 @@ export const formatTime = (timeInMs) => {
     .padStart(2, "0")}`;
 };
 
-export const calculateProgress = (timeLeft, totalTime, radius = 70) => {
-  if (
-    timeLeft == null ||
-    totalTime == null ||
-    totalTime <= 0 ||
-    isNaN(timeLeft) ||
-    isNaN(totalTime)
-  ) {
-    return {
-      progress: 0,
-      strokeDasharray: 2 * Math.PI * radius,
-      strokeDashoffset: 2 * Math.PI * radius,
-    };
-  }
-
+export const calculateProgress = (timeLeft, totalTime, radius) => {
   const progress = Math.max(
     0,
     Math.min(100, ((totalTime - timeLeft) / totalTime) * 100)
@@ -33,5 +19,5 @@ export const calculateProgress = (timeLeft, totalTime, radius = 70) => {
   const strokeDasharray = 2 * Math.PI * radius;
   const strokeDashoffset = strokeDasharray - (progress / 100) * strokeDasharray;
 
-  return { progress, strokeDasharray, strokeDashoffset };
+  return { strokeDasharray, strokeDashoffset };
 };

@@ -1,4 +1,4 @@
-import { useAppStore } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore.ts";
 
 function SettingsActions() {
   const {

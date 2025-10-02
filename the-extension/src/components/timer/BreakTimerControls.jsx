@@ -1,5 +1,5 @@
 import { Play, Pause, Square } from "lucide-react";
-import { useAppStore } from "../../store/appStore";
+import { useAppStore } from "../../store/appStore.ts";
 
 function BreakTimerControls() {
   const { isRunning, setIsRunning, setTimeLeft, settings } = useAppStore();
