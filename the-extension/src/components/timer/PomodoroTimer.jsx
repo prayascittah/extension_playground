@@ -9,12 +9,12 @@ function PomodoroTimer() {
   const {
     timeLeft,
     settings,
-    completedSessions,
     isRunning,
     setTimeLeft,
     setIsRunning,
     isBreakMode,
     setIsBreakMode,
+    completedSessions,
     setCompletedSessions,
   } = useAppStore();
 
@@ -22,14 +22,17 @@ function PomodoroTimer() {
 
   // Timer countdown effect
   useEffect(() => {
-    if (isRunning && timeLeft > 0) {
+    if (
+      (completedSessions === 0 && isRunning) ||
+      (completedSessions > 0 && timeLeft > 0)
+    ) {
       timerRef.current = setInterval(() => {
         const newTime = Math.max(0, timeLeft - 1000);
         if (newTime === 0) {
           setIsRunning(false);
           setIsBreakMode(true);
           setTimeLeft(settings.breakTime);
-          setCompletedSessions((prev) => prev + 1);
+          setCompletedSessions(completedSessions + 1);
         } else {
           setTimeLeft(newTime);
         }
@@ -48,6 +51,7 @@ function PomodoroTimer() {
       }
     };
   }, [
+    completedSessions,
     isRunning,
     timeLeft,
     isBreakMode,
