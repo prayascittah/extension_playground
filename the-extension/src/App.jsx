@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useRef } from "react";
 import { useAppStore } from "./store/appStore";
 import { motion } from "framer-motion";
 import {
@@ -12,37 +12,11 @@ import { MiddleSection } from "./components/clock";
 import { SettingsPage } from "./components/settings";
 import { PomodoroTimer } from "./components/timer";
 import BreakTimer from "./components/timer/BreakTimer";
-import { handleSessionTransition, useLiveClock } from "./utils/clockUtils";
+import { useLiveClock } from "./utils/clockUtils";
 
 function App() {
-  const [isBreakMode, setIsBreakMode] = useState(false);
-  const {
-    setTime,
-    isSettingsMode,
-    settings,
-    isTimerMode,
-    timeLeft,
-    setTimeLeft,
-    isRunning,
-    setIsRunning,
-    setCompletedSessions,
-  } = useAppStore();
+  const { setTime, isSettingsMode, isTimerMode, isBreakMode } = useAppStore();
   const timeoutRef = useRef();
-
-  // Timer session transitions
-  useEffect(() => {
-    handleSessionTransition();
-  }, [
-    timeLeft,
-    isTimerMode,
-    isBreakMode,
-    isRunning,
-    settings.breakTime,
-    settings.pomodoroTime,
-    setCompletedSessions,
-    setTimeLeft,
-    setIsRunning,
-  ]);
 
   useEffect(useLiveClock(timeoutRef), [setTime]);
 

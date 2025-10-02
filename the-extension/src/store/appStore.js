@@ -27,4 +27,6 @@ export const useAppStore = create((set) => ({
   setIsRunning: (v) => set({ isRunning: v }),
   completedSessions: 0,
   setCompletedSessions: (v) => set({ completedSessions: v }),
+  isBreakMode: false,
+  setIsBreakMode: (v) => set({ isBreakMode: v }),
 }));

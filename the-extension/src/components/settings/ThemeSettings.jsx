@@ -1,7 +1,8 @@
+import themes from "../../constants/themes";
+
 function ThemeSettings({
   selectedTheme,
   setSelectedTheme,
-  themes,
   handleThemeHover,
   handleThemeSelect,
 }) {
