@@ -2,12 +2,11 @@ import { Square } from "lucide-react";
 import { useAppStore } from "../../store/appStore.ts";
 
 function BreakTimerControls() {
-  const { setIsRunning, setTimeLeft, settings } = useAppStore();
-
   const handleStop = (e) => {
     e.stopPropagation();
-    setIsRunning(false);
-    setTimeLeft(settings.breakTime);
+    if (typeof chrome !== "undefined" && chrome.runtime) {
+      chrome.runtime.sendMessage({ action: "restartTimer" });
+    }
   };
 
   return (

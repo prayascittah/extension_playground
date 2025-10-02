@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAppStore } from "../../store/appStore.ts";
 import BreakTimeCircle from "./BreakTimeCircle";
@@ -6,54 +6,34 @@ import BreakTimerDisplay from "./BreakTimerDisplay";
 import BreakTimerControls from "./BreakTimerControls";
 
 function BreakTimer() {
-  const {
-    timeLeft,
-    settings,
-    isRunning,
-    setIsRunning,
-    setTimeLeft,
-    isBreakMode,
-    setIsBreakMode,
-  } = useAppStore();
-  const timerRef = useRef(null);
+  const { timeLeft, isRunning, syncWithBackground } = useAppStore();
 
-  // Automatic timer start when in break mode
   useEffect(() => {
-    if (isBreakMode && timeLeft > 0) {
-      timerRef.current = setInterval(() => {
-        const newTime = Math.max(0, timeLeft - 1000);
-
-        // Handle timer completion
-        if (newTime === 0) {
-          setIsRunning(false);
-          // Break completed, back to pomodoro
-          setIsBreakMode(false);
-          setTimeLeft(settings.pomodoroTime);
-        } else {
-          setTimeLeft(newTime); // Update timeLeft
+    // Only try Chrome APIs if in extension context
+    if (typeof chrome !== "undefined" && chrome.runtime) {
+      // Request initial timer state from background
+      chrome.runtime.sendMessage({ action: "getTimerState" }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.log("Background script not ready yet");
+          return;
         }
-      }, 1000);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    }
+        if (response && response.timerState) {
+          syncWithBackground(response.timerState);
+        }
+      });
 
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
+      // Listen for timer updates from background
+      function handleMessage(message) {
+        if (message.action === "updateTimerState" && message.timerState) {
+          syncWithBackground(message.timerState);
+        }
       }
-    };
-  }, [
-    isBreakMode,
-    timeLeft,
-    settings.pomodoroTime,
-    setTimeLeft,
-    setIsRunning,
-    setIsBreakMode,
-  ]);
+      chrome.runtime.onMessage.addListener(handleMessage);
+      return () => {
+        chrome.runtime.onMessage.removeListener(handleMessage);
+      };
+    }
+  }, [syncWithBackground]);
 
   return (
     <div className="flex-1 flex items-center justify-start gap-10">

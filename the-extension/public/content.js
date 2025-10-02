@@ -20,6 +20,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
   }
 });
 
+// On content script load, request timer state from background
+chrome.runtime.sendMessage({ action: "getTimerState" }, (response) => {
+  if (response && response.timerState) {
+    // Show pill if timer is running or in break mode
+    if (response.timerState.isRunning || response.timerState.isBreakMode) {
+      showFloatingPill(response.timerState);
+    }
+  }
+});
+
 function showFloatingPill(timerState) {
   if (floatingPill) removeFloatingPill();
 

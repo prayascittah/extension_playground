@@ -2,18 +2,20 @@ import { Play, Pause, Square } from "lucide-react";
 import { useAppStore } from "../../store/appStore.ts";
 
 function PomodoroTimerControls() {
-  const { isRunning, setIsRunning, setTimeLeft, settings } = useAppStore();
+  const { isRunning } = useAppStore();
 
   const handlePlayPause = (e) => {
-    // Prevent event bubbling if this component is nested
     e.stopPropagation();
-    setIsRunning(!isRunning);
+    if (typeof chrome !== "undefined" && chrome.runtime) {
+      chrome.runtime.sendMessage({ action: "togglePause" });
+    }
   };
 
   const handleStop = (e) => {
     e.stopPropagation();
-    setIsRunning(false);
-    setTimeLeft(settings.pomodoroTime);
+    if (typeof chrome !== "undefined" && chrome.runtime) {
+      chrome.runtime.sendMessage({ action: "restartTimer" });
+    }
   };
 
   return (

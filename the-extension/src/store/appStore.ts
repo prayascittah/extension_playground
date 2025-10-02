@@ -1,3 +1,5 @@
+// Add this at the top for TypeScript to recognize chrome
+declare const chrome: any;
 import { create } from "zustand";
 
 interface Settings {
@@ -31,6 +33,7 @@ interface AppState {
   setCompletedSessions: (v: number) => void;
   isBreakMode: boolean;
   setIsBreakMode: (v: boolean) => void;
+  syncWithBackground: (timerState: Partial<AppState>) => void;
 }
 
 export const useAppStore = create<AppState>((set) => ({
@@ -51,7 +54,13 @@ export const useAppStore = create<AppState>((set) => ({
     breakTime: 1 * 60 * 1000, // 1 minute in ms
     theme: "light",
   },
-  setSettings: (s) => set({ settings: s }),
+  setSettings: (s) => {
+    set({ settings: s });
+    // Also update background timer if in extension context
+    if (typeof chrome !== "undefined" && chrome.runtime) {
+      chrome.runtime.sendMessage({ action: "updateSettings", settings: s });
+    }
+  },
   isTimerMode: false,
   setIsTimerMode: (v) => set({ isTimerMode: v }),
   timeLeft: 1 * 60 * 1000, // 1 minute in ms
@@ -62,4 +71,5 @@ export const useAppStore = create<AppState>((set) => ({
   setCompletedSessions: (v) => set({ completedSessions: v }),
   isBreakMode: false,
   setIsBreakMode: (v) => set({ isBreakMode: v }),
+  syncWithBackground: (timerState) => set({ ...timerState }),
 }));

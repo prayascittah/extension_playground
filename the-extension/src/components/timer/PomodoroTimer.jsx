@@ -1,4 +1,4 @@
-import { useEffect, useRef } from "react";
+import { useEffect } from "react";
 import { motion } from "framer-motion";
 import { useAppStore } from "../../store/appStore.ts";
 import PomodoroTimerCircle from "./PomodoroTimerCircle";
@@ -6,62 +6,35 @@ import PomodoroTimerDisplay from "./PomodoroTimerDisplay";
 import PomodoroTimerControls from "./PomodoroTimerControls";
 
 function PomodoroTimer() {
-  const {
-    timeLeft,
-    settings,
-    isRunning,
-    setTimeLeft,
-    setIsRunning,
-    isBreakMode,
-    setIsBreakMode,
-    completedSessions,
-    setCompletedSessions,
-  } = useAppStore();
+  const { timeLeft, isRunning, completedSessions, syncWithBackground } =
+    useAppStore();
 
-  const timerRef = useRef(null);
-
-  // Timer countdown effect
   useEffect(() => {
-    if (
-      (completedSessions === 0 && isRunning) ||
-      (completedSessions > 0 && timeLeft > 0)
-    ) {
-      timerRef.current = setInterval(() => {
-        const newTime = Math.max(0, timeLeft - 1000);
-        if (newTime === 0) {
-          setIsRunning(false);
-          setIsBreakMode(true);
-          setTimeLeft(settings.breakTime);
-          setCompletedSessions(completedSessions + 1);
-        } else {
-          setTimeLeft(newTime);
+    // Only try Chrome APIs if in extension context
+    if (typeof chrome !== "undefined" && chrome.runtime) {
+      // Request initial timer state from background
+      chrome.runtime.sendMessage({ action: "getTimerState" }, (response) => {
+        if (chrome.runtime.lastError) {
+          console.log("Background script not ready yet");
+          return;
         }
-      }, 1000);
-    } else {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
-      }
-    }
+        if (response && response.timerState) {
+          syncWithBackground(response.timerState);
+        }
+      });
 
-    return () => {
-      if (timerRef.current) {
-        clearInterval(timerRef.current);
-        timerRef.current = null;
+      // Listen for timer updates from background
+      function handleMessage(message) {
+        if (message.action === "updateTimerState" && message.timerState) {
+          syncWithBackground(message.timerState);
+        }
       }
-    };
-  }, [
-    completedSessions,
-    isRunning,
-    timeLeft,
-    isBreakMode,
-    settings.breakTime,
-    settings.pomodoroTime,
-    setTimeLeft,
-    setIsRunning,
-    setIsBreakMode,
-    setCompletedSessions,
-  ]);
+      chrome.runtime.onMessage.addListener(handleMessage);
+      return () => {
+        chrome.runtime.onMessage.removeListener(handleMessage);
+      };
+    }
+  }, [syncWithBackground]);
   return (
     <div className="flex-1 flex items-center justify-start gap-10">
       {/* Session counter on the left - slides in from left */}
