@@ -12,6 +12,7 @@ import { MiddleSection } from "./components/clock";
 import { SettingsPage } from "./components/settings";
 import { PomodoroTimer } from "./components/timer";
 import BreakTimer from "./components/timer/BreakTimer";
+import FloatingPillBox from "./components/FloatingPillBox";
 import { useLiveClock } from "./utils/clockUtils";
 
 function App() {
@@ -21,43 +22,58 @@ function App() {
   useEffect(useLiveClock(timeoutRef), [setTime]);
 
   return (
-    <div className="w-110 h-60 bg-gray-100 flex p-2">
-      {/* Left section - Pin button and Back button */}
-      <motion.div
-        initial={{ x: -40, opacity: 0.5 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ type: "spring", damping: 20, stiffness: 130, mass: 1.5 }}
-        className="flex flex-col items-center"
-      >
-        <PinButton />
-        <BackButton />
-      </motion.div>
+    <>
+      {/* Floating Pill Box - shows when pinned */}
+      <FloatingPillBox />
 
-      {/* Middle section - Clock, Timer, or Settings */}
-      {isSettingsMode ? (
-        <SettingsPage />
-      ) : isTimerMode ? (
-        isBreakMode ? (
-          <BreakTimer />
+      <div className="w-110 h-60 bg-gray-100 flex p-2">
+        {/* Left section - Pin button and Back button */}
+        <motion.div
+          initial={{ x: -40, opacity: 0.5 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{
+            type: "spring",
+            damping: 20,
+            stiffness: 130,
+            mass: 1.5,
+          }}
+          className="flex flex-col items-center"
+        >
+          <PinButton />
+          <BackButton />
+        </motion.div>
+
+        {/* Middle section - Clock, Timer, or Settings */}
+        {isSettingsMode ? (
+          <SettingsPage />
+        ) : isTimerMode ? (
+          isBreakMode ? (
+            <BreakTimer />
+          ) : (
+            <PomodoroTimer />
+          )
         ) : (
-          <PomodoroTimer />
-        )
-      ) : (
-        <MiddleSection />
-      )}
+          <MiddleSection />
+        )}
 
-      {/* Right section - Lock, Timer, Settings buttons */}
-      <motion.div
-        initial={{ x: 40, opacity: 0.5 }}
-        animate={{ x: 0, opacity: 1 }}
-        transition={{ type: "spring", damping: 20, stiffness: 130, mass: 1.5 }}
-        className="flex flex-col justify-center gap-2"
-      >
-        <LockButton />
-        <TimerButton />
-        <SettingsButton />
-      </motion.div>
-    </div>
+        {/* Right section - Lock, Timer, Settings buttons */}
+        <motion.div
+          initial={{ x: 40, opacity: 0.5 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{
+            type: "spring",
+            damping: 20,
+            stiffness: 130,
+            mass: 1.5,
+          }}
+          className="flex flex-col justify-center gap-2"
+        >
+          <LockButton />
+          <TimerButton />
+          <SettingsButton />
+        </motion.div>
+      </div>
+    </>
   );
 }
 

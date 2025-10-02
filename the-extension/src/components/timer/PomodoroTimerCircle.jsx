@@ -19,7 +19,9 @@ function PomodoroTimerCircle() {
       className="transform -rotate-90"
       animate={isRunning ? { scale: [1, 1.05, 1] } : { scale: 1 }}
       transition={
-        isRunning ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" } : {}
+        isRunning
+          ? { duration: 2, repeat: Infinity, ease: "easeInOut" } // Adjusted duration to sync with 1-second ticking
+          : {}
       }
     >
       <circle
@@ -40,6 +42,8 @@ function PomodoroTimerCircle() {
         strokeDasharray={strokeDasharray}
         strokeDashoffset={strokeDashoffset}
         strokeLinecap="round"
+        animate={{ strokeDashoffset }} // Smooth animation for progress
+        transition={{ duration: 1, ease: "linear" }} // Matches the 1-second ticking
         className="transition-all duration-300 ease-out"
       />
     </motion.svg>

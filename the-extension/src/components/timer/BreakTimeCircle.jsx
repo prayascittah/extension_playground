@@ -6,7 +6,7 @@ function BreakTimeCircle() {
   const { timeLeft, settings, isRunning } = useAppStore();
   const radius = 70;
 
-  const { progress, strokeDasharray, strokeDashoffset } = calculateProgress(
+  const { strokeDasharray, strokeDashoffset } = calculateProgress(
     timeLeft,
     settings.breakTime,
     radius
@@ -19,7 +19,9 @@ function BreakTimeCircle() {
       className="transform -rotate-90"
       animate={isRunning ? { scale: [1, 1.05, 1] } : { scale: 1 }}
       transition={
-        isRunning ? { duration: 2.5, repeat: Infinity, ease: "easeInOut" } : {}
+        isRunning
+          ? { duration: 1, repeat: Infinity, ease: "easeInOut" }
+          : {}
       }
     >
       <circle
@@ -40,6 +42,8 @@ function BreakTimeCircle() {
         strokeDasharray={strokeDasharray}
         strokeDashoffset={strokeDashoffset}
         strokeLinecap="round"
+        animate={{ strokeDashoffset }} // Smooth animation for progress
+        transition={{ duration: 1, ease: "linear" }} // Matches the 1-second ticking
         className="transition-all duration-300 ease-out"
       />
     </motion.svg>
