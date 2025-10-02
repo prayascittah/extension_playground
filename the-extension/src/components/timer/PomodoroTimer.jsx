@@ -1,25 +1,52 @@
+import { useEffect, useRef } from "react";
 import { motion } from "framer-motion";
-import { formatTime, calculateProgress } from "../../utils/timerUtils";
+import {
+  formatTime,
+  calculateProgress,
+  createTimerInterval,
+} from "../../utils/timerUtils";
 import { useAppStore } from "../../store/appStore";
 import PomodoroTimerCircle from "./PomodoroTimerCircle";
 import PomodoroTimerDisplay from "./PomodoroTimerDisplay";
 import PomodoroTimerControls from "./PomodoroTimerControls";
 
 function PomodoroTimer() {
-  const { timeLeft, settings, completedSessions, isRunning } = useAppStore();
-  const radius = 75;
+  const {
+    timeLeft,
+    settings,
+    completedSessions,
+    isRunning,
+    setTimeLeft,
+    setIsRunning,
+  } = useAppStore();
 
-  // Ensure timeLeft and settings.pomodoroTime are always valid numbers
-  const safeTimeLeft =
-    typeof timeLeft === "number" ? timeLeft : settings.pomodoroTime;
-  const safePomodoroTime =
-    typeof settings.pomodoroTime === "number" ? settings.pomodoroTime : 60000;
+  const radius = 75;
+  const timerRef = useRef(null);
+
+  useEffect(() => {
+    if (isRunning) {
+      timerRef.current = createTimerInterval(setTimeLeft, setIsRunning);
+    } else {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    }
+
+    return () => {
+      if (timerRef.current) {
+        clearInterval(timerRef.current);
+        timerRef.current = null;
+      }
+    };
+  }, [isRunning, setTimeLeft, setIsRunning]);
+
   const { strokeDasharray, strokeDashoffset } = calculateProgress(
-    safeTimeLeft,
-    safePomodoroTime,
+    timeLeft,
+    settings.pomodoroTime,
     radius
   );
-  const displayTime = formatTime(safeTimeLeft);
+  const displayTime = formatTime(timeLeft);
 
   return (
     <div className="flex-1 flex items-center justify-start gap-10">
