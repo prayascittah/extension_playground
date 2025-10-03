@@ -53,7 +53,18 @@ function startTimer() {
   broadcastTimerState();
 }
 
-
+function restartTimer() {
+  if (timerInterval) clearInterval(timerInterval);
+  if (timerState.isBreakMode) {
+    timerState.timeLeft = timerState.breakTime;
+    timerState.isRunning = true;
+    startTimer();
+  } else {
+    timerState.timeLeft = timerState.pomodoroTime;
+    timerState.isRunning = false;
+    broadcastTimerState();
+  }
+}
 
 function pauseTimer() {
   timerState.isRunning = false;

@@ -1,0 +1,62 @@
+<!-- Minimal monochrome floating pill HTML for you to customize -->
+<div
+  id="floating-pill"
+  style="
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 2147483647;
+    background: #fff;
+    border-radius: 999px;
+    box-shadow: 0 2px 16px #0003;
+    display: flex;
+    align-items: center;
+    padding: 18px 32px;
+    min-width: 320px;
+    min-height: 64px;
+    font-family: inherit;
+    border: 2px solid #111;
+    color: #111;
+    gap: 18px;
+    user-select: none;
+  "
+>
+  <div style="display: flex; align-items: center; gap: 10px">
+    <span><!-- icon here --></span>
+    <span style="font-size: 1.1em; font-weight: 600">Focus</span>
+  </div>
+  <span
+    style="
+      font-variant-numeric: tabular-nums;
+      font-weight: bold;
+      font-size: 2em;
+      margin-right: 10px;
+      letter-spacing: 0.04em;
+    "
+    >25:00</span
+  >
+  <span style="font-size: 1em; color: #444; margin-right: 10px"></span>
+  <span style="display: flex; align-items: center; gap: 6px">
+    <button
+      style="background: none; border: none; cursor: pointer; padding: 4px"
+    >
+      ⏸️
+    </button>
+    <button
+      style="background: none; border: none; cursor: pointer; padding: 4px"
+    >
+      🔄
+    </button>
+  </span>
+  <button
+    style="
+      background: none;
+      border: none;
+      cursor: pointer;
+      margin-left: 8px;
+      padding: 4px;
+    "
+  >
+    ✖️
+  </button>
+</div>

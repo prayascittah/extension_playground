@@ -7,16 +7,21 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   build: {
     outDir: "dist",
+    target: "esnext",
+    minify: false,
+    emptyOutDir: false,
     rollupOptions: {
       input: {
         popup: "index.html",
-        "floating-pill": "src/FloatingPillEntry.jsx",
       },
       output: {
         entryFileNames: "[name].js",
         chunkFileNames: "[name].js",
         assetFileNames: "[name].[ext]",
       },
+    },
+    commonjsOptions: {
+      include: [/node_modules/, /src/],
     },
   },
   publicDir: "public",

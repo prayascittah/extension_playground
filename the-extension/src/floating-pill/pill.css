@@ -1,0 +1,38 @@
+.pill {
+  position: fixed;
+  top: 24px;
+  right: 24px;
+  z-index: 2147483647;
+  background: #fff;
+  border-radius: 999px;
+  box-shadow: 0 2px 16px #0003;
+  display: flex;
+  align-items: center;
+  padding: 18px 32px;
+  min-width: 320px;
+  min-height: 64px;
+  font-family: inherit;
+  border: 2px solid #111;
+  color: #111;
+  gap: 18px;
+  user-select: none;
+}
+.pill-content {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+.pill-icon {
+  font-size: 1.5em;
+}
+.pill-label {
+  font-size: 1.1em;
+  font-weight: 600;
+}
+.pill-timer {
+  font-variant-numeric: tabular-nums;
+  font-weight: bold;
+  font-size: 2em;
+  margin-right: 10px;
+  letter-spacing: 0.04em;
+}
