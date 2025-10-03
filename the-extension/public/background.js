@@ -53,6 +53,8 @@ function startTimer() {
   broadcastTimerState();
 }
 
+
+
 function pauseTimer() {
   timerState.isRunning = false;
   if (timerInterval) clearInterval(timerInterval);

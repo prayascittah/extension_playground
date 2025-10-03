@@ -5,7 +5,9 @@ function BreakTimerControls() {
   const handleStop = (e) => {
     e.stopPropagation();
     if (typeof chrome !== "undefined" && chrome.runtime) {
-      chrome.runtime.sendMessage({ action: "restartTimer" });
+      chrome.runtime.sendMessage({ action: "restartTimer" }, () => {
+        chrome.runtime.sendMessage({ action: "startTimer" });
+      });
     }
   };
 

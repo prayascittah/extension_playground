@@ -208,3 +208,4 @@
     setTimeout(checkCurrentUrl, 100);
   }
 })();
+

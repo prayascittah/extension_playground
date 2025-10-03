@@ -37,44 +37,53 @@ function showFloatingPill(timerState) {
   floatingPill.id = "extension-floating-pill";
   floatingPill.style.cssText = `
     position: fixed; top: 24px; left: 24px; z-index: 999999;
-    background: #fff; border-radius: 999px; box-shadow: 0 2px 16px #0002;
-    display: flex; align-items: center; padding: 8px 20px; min-width: 260px;
-    font-family: inherit; border: 1px solid #e5e7eb;
-    user-select: none;
+    background: #fff; border-radius: 999px; box-shadow: 0 2px 16px #0003;
+    display: flex; align-items: center; padding: 18px 32px; min-width: 320px; min-height: 64px;
+    font-family: inherit; border: 2px solid #111;
+    user-select: none; color: #111;
+    gap: 18px;
   `;
 
+  // Lucide SVG icons (https://lucide.dev/icons)
+  const playIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="5 3 19 12 5 21 5 3"/></svg>`;
+  const pauseIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>`;
+  const restartIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>`;
+  const closeIcon = `<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>`;
+  const tomatoIcon = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><ellipse cx="12" cy="15" rx="9" ry="7" fill="#fff"/><path d="M12 7V3"/><path d="M12 3c-1 2-3 3-5 3"/><path d="M12 3c1 2 3 3 5 3"/></svg>`;
+  const breakIcon = `<svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="#111" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="4" y="10" width="16" height="8" rx="4" fill="#fff"/><rect x="8" y="6" width="8" height="4" rx="2" fill="#fff"/></svg>`;
+
   floatingPill.innerHTML = `
-    <div class="pill-header" style="cursor: grab; display: flex; align-items: center;">
-      <span class="pill-icon" style="font-size: 1.5em; margin-right: 10px;">${
-        timerState.isBreakMode ? "☕" : "🍅"
+    <div class="pill-header" style="cursor: grab; display: flex; align-items: center; gap: 10px;">
+      <span class="pill-icon" style="display: flex; align-items: center;">${
+        timerState.isBreakMode ? breakIcon : tomatoIcon
       }</span>
-      <span class="pill-label" style="margin-right: 10px; color: #555;">${
+      <span class="pill-label" style="font-size: 1.1em; font-weight: 600; color: #111;">${
         timerState.isBreakMode ? "Break" : "Focus"
       }</span>
     </div>
-    <span class="pill-timer" style="font-variant-numeric: tabular-nums; font-weight: bold; margin-right: 10px;">${formatTime(
+    <span class="pill-timer" style="font-variant-numeric: tabular-nums; font-weight: bold; font-size: 2em; margin-right: 10px; letter-spacing: 0.04em;">${formatTime(
       timerState.timeLeft
     )}</span>
-    <span class="pill-session" style="font-size: 0.9em; color: #888; margin-right: 10px;">
+    <span class="pill-session" style="font-size: 1em; color: #444; margin-right: 10px;">
       ${
         timerState.completedSessions > 0
           ? `Session: ${timerState.completedSessions} started`
           : ""
       }
     </span>
-    <span class="pill-controls">
+    <span class="pill-controls" style="display: flex; align-items: center; gap: 6px;">
       ${
         timerState.isBreakMode
-          ? `<button class="pill-btn pill-restart" title="Restart" style="margin-right: 4px;">🔄</button>`
+          ? `<button class="pill-btn pill-restart" title="Restart" style="background: none; border: none; cursor: pointer; padding: 4px;">${restartIcon}</button>`
           : `<button class="pill-btn pill-pause" title="${
               timerState.isRunning ? "Pause" : "Resume"
-            }" style="margin-right: 4px;">${
-              timerState.isRunning ? "⏸️" : "▶️"
+            }" style="background: none; border: none; cursor: pointer; padding: 4px;">${
+              timerState.isRunning ? pauseIcon : playIcon
             }</button>
-           <button class="pill-btn pill-restart" title="Restart" style="margin-right: 4px;">🔄</button>`
+           <button class="pill-btn pill-restart" title="Restart" style="background: none; border: none; cursor: pointer; padding: 4px;">${restartIcon}</button>`
       }
     </span>
-    <button class="pill-btn pill-close" title="Close" style="margin-left: 8px;">✕</button>
+    <button class="pill-btn pill-close" title="Close" style="background: none; border: none; cursor: pointer; margin-left: 8px; padding: 4px;">${closeIcon}</button>
   `;
 
   document.body.appendChild(floatingPill);
@@ -89,7 +98,9 @@ function showFloatingPill(timerState) {
   }
   if (floatingPill.querySelector(".pill-restart")) {
     floatingPill.querySelector(".pill-restart").onclick = () => {
-      chrome.runtime.sendMessage({ action: "restartTimer" });
+      chrome.runtime.sendMessage({ action: "restartTimer" }, () => {
+        chrome.runtime.sendMessage({ action: "startTimer" });
+      });
     };
   }
 

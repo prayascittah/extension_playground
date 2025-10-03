@@ -12,7 +12,6 @@ import { MiddleSection } from "./components/clock";
 import { SettingsPage } from "./components/settings";
 import { PomodoroTimer } from "./components/timer";
 import BreakTimer from "./components/timer/BreakTimer";
-import FloatingPillBox from "./components/FloatingPillBox";
 import { useLiveClock } from "./utils/clockUtils";
 
 function App() {
@@ -23,9 +22,6 @@ function App() {
 
   return (
     <>
-      {/* Floating Pill Box - shows when pinned */}
-      <FloatingPillBox />
-
       <div className="w-110 h-60 bg-gray-100 flex p-2">
         {/* Left section - Pin button and Back button */}
         <motion.div
