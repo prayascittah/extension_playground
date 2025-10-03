@@ -126,6 +126,16 @@ chrome.runtime.onMessage.addListener((message, sender, sendResponse) => {
       broadcastTimerState();
     }
     sendResponse({ success: true });
+  } else if (message.action === "broadcastHideFloatingPill") {
+    // Send hideFloatingPill to all tabs
+    chrome.tabs.query({}, (tabs) => {
+      for (const tab of tabs) {
+        if (tab.id) {
+          chrome.tabs.sendMessage(tab.id, { action: "hideFloatingPill" });
+        }
+      }
+    });
+    sendResponse({ success: true });
   }
   return true; // keep message channel open for async
 });

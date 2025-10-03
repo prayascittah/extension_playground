@@ -44,8 +44,12 @@ function showFloatingPill(timerState) {
   `;
 
   floatingPill.innerHTML = `
-    <span style="font-size: 14px; font-weight: 600;">${timerState.isBreakMode ? "Break" : "Focus"}</span>
-    <span style="font-variant-numeric: tabular-nums; font-weight: 700; font-size: 18px; letter-spacing: 0.5px;">${formatTime(timerState.timeLeft)}</span>
+    <span style="font-size: 14px; font-weight: 600;">${
+      timerState.isBreakMode ? "Break" : "Focus"
+    }</span>
+    <span style="font-variant-numeric: tabular-nums; font-weight: 700; font-size: 18px; letter-spacing: 0.5px;">${formatTime(
+      timerState.timeLeft
+    )}</span>
     <button class="pill-pause" style="all: unset; cursor: pointer; padding: 4px; display: flex; align-items: center;">
       ${timerState.isRunning ? "⏸️" : "▶️"}
     </button>
@@ -54,7 +58,7 @@ function showFloatingPill(timerState) {
   `;
 
   document.body.appendChild(floatingPill);
-  
+
   // Make draggable
   floatingPill.onmousedown = (e) => {
     isDragging = true;
@@ -62,23 +66,32 @@ function showFloatingPill(timerState) {
     dragOffset.y = e.clientY - floatingPill.offsetTop;
     floatingPill.style.cursor = "grabbing";
   };
-  
+
   document.onmousemove = (e) => {
     if (!isDragging) return;
     const x = e.clientX - dragOffset.x;
     const y = e.clientY - dragOffset.y;
-    floatingPill.style.left = Math.max(0, Math.min(window.innerWidth - floatingPill.offsetWidth, x)) + "px";
-    floatingPill.style.top = Math.max(0, Math.min(window.innerHeight - floatingPill.offsetHeight, y)) + "px";
+    floatingPill.style.left =
+      Math.max(0, Math.min(window.innerWidth - floatingPill.offsetWidth, x)) +
+      "px";
+    floatingPill.style.top =
+      Math.max(0, Math.min(window.innerHeight - floatingPill.offsetHeight, y)) +
+      "px";
   };
-  
+
   document.onmouseup = () => {
     isDragging = false;
     if (floatingPill) floatingPill.style.cursor = "grab";
   };
 
   // Button handlers
-  floatingPill.querySelector(".pill-close").onclick = removeFloatingPill;
-  floatingPill.querySelector(".pill-pause").onclick = () => chrome.runtime.sendMessage({ action: "togglePause" });
+  floatingPill.querySelector(".pill-close").onclick = () => {
+    // Ask background to broadcast hideFloatingPill to all tabs
+    chrome.runtime.sendMessage({ action: "broadcastHideFloatingPill" });
+    removeFloatingPill();
+  };
+  floatingPill.querySelector(".pill-pause").onclick = () =>
+    chrome.runtime.sendMessage({ action: "togglePause" });
   floatingPill.querySelector(".pill-restart").onclick = () => {
     chrome.runtime.sendMessage({ action: "restartTimer" });
     chrome.runtime.sendMessage({ action: "startTimer" });
@@ -97,8 +110,9 @@ function updatePillUI(timerState) {
   const labelSpan = floatingPill.querySelector("span");
   const timerSpan = floatingPill.querySelector("span:nth-child(2)");
   const pauseBtn = floatingPill.querySelector(".pill-pause");
-  
-  if (labelSpan) labelSpan.textContent = timerState.isBreakMode ? "Break" : "Focus";
+
+  if (labelSpan)
+    labelSpan.textContent = timerState.isBreakMode ? "Break" : "Focus";
   if (timerSpan) timerSpan.textContent = formatTime(timerState.timeLeft);
   if (pauseBtn) pauseBtn.textContent = timerState.isRunning ? "⏸️" : "▶️";
 }
@@ -108,5 +122,7 @@ function formatTime(ms) {
   const totalSeconds = Math.ceil(ms / 1000);
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
-  return `${minutes.toString().padStart(2, "0")}:${seconds.toString().padStart(2, "0")}`;
+  return `${minutes.toString().padStart(2, "0")}:${seconds
+    .toString()
+    .padStart(2, "0")}`;
 }

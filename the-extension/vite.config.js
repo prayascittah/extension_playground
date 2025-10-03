@@ -13,6 +13,7 @@ export default defineConfig({
     rollupOptions: {
       input: {
         popup: "index.html",
+        "floating-pill": "src/FloatingPillEntry.jsx",
       },
       output: {
         entryFileNames: "[name].js",
